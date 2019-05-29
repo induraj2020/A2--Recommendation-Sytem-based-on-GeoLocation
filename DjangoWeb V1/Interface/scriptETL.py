@@ -5,6 +5,9 @@ from sklearn import preprocessing
 from sklearn.preprocessing import LabelEncoder
 from math import radians, cos, sin, asin, sqrt
 from feature_selector import FeatureSelector
+import os
+import posixpath
+from settings import BASE_DIR
 
 def showMissingValues(df):
     df[df == ""] = np.nan
@@ -234,7 +237,7 @@ def heatmap_ftr_slcor(df):                    # heatlap feature selector funcito
             k=k+1                                                      ##### so just multiplied by 10 .... THIS HAS TO BE CHECKED
         i_ind=i_ind+1
     print(new_df.head(3))
-    new_df.to_csv('H:\Documents\git\ADEO_Project\DjangoWeb\Interface\static\indu.csv',index=False)
+    new_df.to_csv( os.path.join(BASE_DIR, 'DjangoWeb V1\Interface\static\indu.csv') ,index=False)
     return  None
 
 
