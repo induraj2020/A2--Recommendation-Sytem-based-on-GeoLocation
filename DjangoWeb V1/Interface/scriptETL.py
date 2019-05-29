@@ -24,6 +24,14 @@ def return_distinct_ville(df):
     df_ville_uniq = df['VILLE'].unique().tolist()
     return(df_ville_uniq)
 
+def return_distinct_enterp(df):
+    df_enterp_uniq = df['ENTREPRISE'].unique().tolist()
+    return(df_enterp_uniq)
+
+def return_distinct_site(df):
+    df_uniq = df['SITE'].unique().tolist()
+    return(df_uniq)
+
 def return_distinct_cp(df):
     df_cp_uniq = df['CODE_POSTAL'].unique().tolist()
     return (df_cp_uniq)

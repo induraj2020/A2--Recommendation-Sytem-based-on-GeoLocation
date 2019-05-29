@@ -4,6 +4,7 @@ from django.shortcuts import render
 from django.shortcuts import HttpResponse
 from dataCRUD.models import *
 from .scriptETL import *
+from .scriptForecast import *
 from django.contrib.auth.decorators import login_required
 from django.template.loader import get_template
 from .forms import ContactForm
@@ -165,6 +166,67 @@ def etl_mergetablesRF(request):
              'VERSION'      :str(version) + " - " + description
             }
     return render(request, 'etl_mergedtables.html', context)
+
+@login_required
+def forecast_predict(request):
+    # Select the Version of Forecast to Use (Default the last)
+    df_weights=FORECAST_WEIGHTS.pdobjects.all().to_dataframe()
+    df_list_versions=return_distinct_version(df_weights)
+    max_version=max(df_list_versions)
+
+    version_filtered =  (request.GET.get('version'))
+    if version_filtered:
+       version_filtered =  (int) (version_filtered)
+    else:
+        version_filtered=max_version
+    
+    df_weights=df_weights[ df_weights['idCSV']==version_filtered ]
+    
+    w0=df_weights.w0.item()
+    w1=df_weights.w1.item()
+    w2=df_weights.w2.item()
+
+    program =  (request.GET.get('program'))
+    campus =  (request.GET.get('campus'))
+    ville =  (request.GET.get('ville'))
+
+    # enterprise_list = predict_intership(program,campus,ville,PRG_ENT_df,Campus_ENT_df,ADR_ENT_df,Ent_nbIntern,w0,w1,w2)
+    # print(enterprise_list)
+
+    df=mergedTables.pdobjects.filter(idCSV=version_filtered).to_dataframe()
+    df_new_prg = return_distinct_prg(df)
+    df_new_campus = return_distinct_site(df)
+    df_new_ville = return_distinct_ville(df)
+
+    context={'LIST_VERSIONS': df_list_versions,
+             'SELECTED_VERSION':version_filtered,
+             'prg': df_new_prg,
+             'campus': df_new_campus,
+             'ville': df_new_ville,
+            }
+    return render(request, 'forecast_predict.html', context)
+
+@login_required
+def forecast_predict_update(request):
+    # vERIFY the difference of versions between MERGEDTABLE and FORECAST_WS  
+    # df_list_versions=return_distinct_version(FORECAST_WS.pdobjects.all().to_dataframe())
+    df_list_versions=return_distinct_version(mergedTables.pdobjects.all().to_dataframe())
+    max_version=max(df_list_versions)
+    # version_filtered=max_version
+    # version_filtered=11
+
+    # for i in range(12,16):
+    #     df=mergedTables.pdobjects.filter(idCSV=i).to_dataframe()
+    #     print('XXXX')
+    #     print(i)
+    #     print(len(df))
+    #     w0,w1,w2 = Regression(df)
+    #     print(i, w0, w1, w2)
+
+
+    context={
+            }
+    return render(request, 'forecast_predict_update.html', context)
 
 @login_required
 def maps(request):
