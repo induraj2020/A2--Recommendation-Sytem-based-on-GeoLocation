@@ -4,6 +4,7 @@ from django.shortcuts import render
 from django.shortcuts import HttpResponse
 from dataCRUD.models import *
 from .scriptETL import *
+from .scriptForecast import *
 from django.contrib.auth.decorators import login_required
 from django.template.loader import get_template
 from .forms import ContactForm
@@ -26,11 +27,20 @@ def home(request):
 
 @login_required
 def descriptiveStats(request):                         ## function to display net charts without any filters being applied
-    query_results=mergedTables.objects.all()
     df=mergedTables.pdobjects.all().to_dataframe()
-    qs=mergedTables.objects.all().count()
-    numSTU=mergedTables.objects.values('ID_ANO').distinct().count()
-    numENT=mergedTables.objects.values('ENTREPRISE').distinct().count()
+    #Take the last version
+    df_list_versions=return_distinct_version(df)
+    max_version=max(df_list_versions)
+    
+    version_filtered =  (request.GET.get('version'))
+    if version_filtered:
+       version_filtered =  (int) (version_filtered)
+    else:
+        version_filtered=max_version
+
+    df=df [df['idCSV']==version_filtered ]
+
+
     STUyear=return_distinct_year(df)
     # STUQtdPerYear=return_distinct_STUQtdPerYear(df)
     dataGraph=[1000,10,552,2,63,830,10,84,400]
@@ -46,17 +56,16 @@ def descriptiveStats(request):                         ## function to display ne
     s_cergy, s_pau, s_le =salary_avg(df, 'PRG')
     top, label = topx(df,'ENTREPRISE')
 
-
-
-
     context={'query_results':query_results,
              'NUMBERLINES':qs,
              'NUMBERSTU':numSTU,
              'NUMENT':numENT,
+             'LIST_VERSIONS': df_list_versions,
+             'SELECTED_VERSION':version_filtered,
              'STUyear':STUyear, 
              'DATAGRAPH':dataGraph,
              'heat_value':heat_value,
-             'Mean_sal':mean_sal,
+             'mean_sal':mean_sal,
              'num_records':num_records,
              'num_std':num_std,
              'num_entre':num_entre,
@@ -89,7 +98,7 @@ def etl(request):
        version_filtered =  (int) (version_filtered)
     else:
         version_filtered=max_version
-
+    
     PRG=PRG [PRG['idCSV']==version_filtered ]
     ADR=ADR [ADR['idCSV']==version_filtered ]
     STU=STU [STU['idCSV']==version_filtered ]
@@ -112,8 +121,14 @@ def etl(request):
 def etl_mergetables(request):    
     version=int(mergedTables.objects.all().aggregate(Max('idCSV'))['idCSV__max']) + 1
     description='Delete Null Values'
+    df_list_versions=return_distinct_version(PRG_STUDENT_SITE.pdobjects.all().to_dataframe())
+    max_version=max(df_list_versions)
 
     version_filtered =  (request.GET.get('version'))
+    if version_filtered:
+       version_filtered =  (int) (version_filtered)
+    else:
+        version_filtered=max_version
 
     ADR=redefineDFTypes(ADR_STUDENTS.pdobjects.filter(idCSV=version_filtered).to_dataframe())    
     PRG=redefineDFTypes(PRG_STUDENT_SITE.pdobjects.filter(idCSV=version_filtered).to_dataframe())
@@ -123,7 +138,7 @@ def etl_mergetables(request):
     df=deleteMissingValues(df)
     numberlines = df.ID_ANO.count()
     table = mergedTables.objects
-    #writeDF2Table(df, table, version, description )
+    writeDF2Table(df, table, version, description )
 
     df=showMissingValues( mergedTables.pdobjects.filter(idCSV=version).to_dataframe() )
     context={'MERGEDTABLES' :df.to_dict('split') ,
@@ -147,7 +162,7 @@ def etl_mergetablesRF(request):
        
     ADR1,PRG1,STU1=UpdateMissingValues(ADR,PRG,STU,LOC )
     df=mergeTables(ADR1,PRG1,STU1)
-    print(df)
+
     numberlines = df.ID_ANO.count()
     table = mergedTables.objects
     writeDF2Table(df, table, version, description )
@@ -158,6 +173,85 @@ def etl_mergetablesRF(request):
              'VERSION'      :str(version) + " - " + description
             }
     return render(request, 'etl_mergedtables.html', context)
+
+@login_required
+def forecast_predict(request):
+    # Select the Version of Forecast to Use (Default the last)
+    df_weights=FORECAST_WEIGHTS.pdobjects.all().to_dataframe()
+    df_list_versions=return_distinct_version(df_weights)
+    max_version=max(df_list_versions)
+
+    version_filtered =  (request.GET.get('version'))
+    if version_filtered:
+       version_filtered =  (int) (version_filtered)
+    else:
+        version_filtered=max_version
+    
+    df_weights=df_weights[ df_weights['idCSV']==version_filtered ]
+    
+    w0=df_weights.w0.item()
+    w1=df_weights.w1.item()
+    w2=df_weights.w2.item()
+
+    program =  (request.GET.get('program'))
+    campus =  (request.GET.get('campus'))
+    ville =  (request.GET.get('ville'))
+
+    has_result=0
+    enterprise_list=pd.DataFrame()
+    if program and campus and ville:
+        if (program!='Choose...') and (campus != 'Choose...') and (ville != 'Choose...'):
+            # XXXX - SOLVED THIS PROBLEM: PRG_ENT_df,Campus_ENT_df,ADR_ENT_df,Ent_nbIntern
+            # enterprise_list = predict_intership(program,campus,ville,PRG_ENT_df,Campus_ENT_df,ADR_ENT_df,Ent_nbIntern,w0,w1,w2)
+            data = [['AUBAY', 17, 31, 1], ['Osaka', 21, 19, 0], ['Total', 20, 11, 0]]   
+            enterprise_list = pd.DataFrame(data, columns = ['ENTERPRISE', 'nb_PRG', 'nb_Campus', 'nb_ADR' ]) 
+            print(enterprise_list)
+            has_result=1
+
+
+    df=mergedTables.pdobjects.filter(idCSV=version_filtered).to_dataframe()
+    df_new_prg = return_distinct_prg(df)
+    df_new_campus = return_distinct_site(df)
+    df_new_ville = return_distinct_ville(df)
+
+    context={'LIST_VERSIONS': df_list_versions,
+             'SELECTED_VERSION':version_filtered,
+             'prg': df_new_prg,
+             'campus': df_new_campus,
+             'ville': df_new_ville,
+             'enterprise_list':enterprise_list.to_dict('split'),
+             'has_result':has_result
+            }
+    return render(request, 'forecast_predict.html', context)
+
+@login_required
+def forecast_predict_update(request):
+    df_weights=FORECAST_WEIGHTS.pdobjects.all().to_dataframe()
+    df_weightsLastVersion=(int)(max(df_weights.idCSV))
+    mergedTableLastVersion=(int) (mergedTables.objects.all().aggregate(Max('idCSV'))['idCSV__max'])
+
+    do_update =  (request.GET.get('update'))
+
+    table = FORECAST_WEIGHTS.objects
+    if do_update:
+        for version in range(df_weightsLastVersion+1, mergedTableLastVersion+1):
+            df=mergedTables.pdobjects.filter(idCSV=version).to_dataframe()
+            if len(df.idCSV)>1:
+                print(len(df.idCSV))
+                w0, w1, w2 = Regression(df)
+                #Write table
+                table.create(
+                    w0           =w0,
+                    w1           =w1,
+                    w2           =w2,
+                    idCSV        =version
+                )
+
+    context={'df_weights':df_weights.to_dict('split'),
+             'mergedTableLastVersion':mergedTableLastVersion,
+             'df_weightsLastVersion':df_weightsLastVersion
+            }
+    return render(request, 'forecast_predict_update.html', context)
 
 @login_required
 def maps(request):
@@ -261,20 +355,18 @@ def filter_chart(request):                           ## function to change the c
 
     if is_valid_queryparam(prg_filtered):
         qs=qs.filter(PRG=prg_filtered)
-        #qs= qs & query_results.filter(ADR_VILLE='CERGY' )
-        #print(str(qs.query))
-        #print(prg_filtered)
+
 
     if is_valid_queryparam(vil_filtered):
         qs=qs.filter(ADR_VILLE=vil_filtered)     
-       # print(qs)
+
 
     if is_valid_queryparam(cod_filtered):
         qs=qs.filter(ADR_CP=cod_filtered)
 
     if is_valid_queryparam(rem_filtered):
         qs=qs.filter(REMUNERATION=rem_filtered)
-       # print(type(qs))   ## class 'django.db.models.query.QuerySet'
+      
 
     elif is_valid_queryparam2(yfr_filtered,yto_filtered):
         if (yfr_filtered <= yto_filtered):                     ## since in database the years are in the format xxxx/yyyy, and is of object datatype, all these stuffs are wrtiten for splitting, type casting, and querring

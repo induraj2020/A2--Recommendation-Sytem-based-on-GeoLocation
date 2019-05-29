@@ -1,6 +1,7 @@
 #bg-img
 {
-background:url("../baa.png") no-repeat ;
+/* background:url("../baa.png") no-repeat ; */
+background:black ;
 background-size:cover;
 }
 

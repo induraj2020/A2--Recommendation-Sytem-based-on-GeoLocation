@@ -83,3 +83,14 @@ class ADR_LOCATION(models.Model):
 
     class Meta:
         db_table='ADR_LOCATION'
+
+class FORECAST_WEIGHTS(models.Model):
+    w0           =models.FloatField()
+    w1           =models.FloatField()
+    w2           =models.FloatField()
+    idCSV        =models.IntegerField()
+    objects = models.Manager()
+    pdobjects = DataFrameManager()
+
+    class Meta:
+        db_table='FORECAST_WEIGHTS'
