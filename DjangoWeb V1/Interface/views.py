@@ -56,10 +56,7 @@ def descriptiveStats(request):                         ## function to display ne
     s_cergy, s_pau, s_le =salary_avg(df, 'PRG')
     top, label = topx(df,'ENTREPRISE')
 
-    context={'query_results':query_results,
-             'NUMBERLINES':qs,
-             'NUMBERSTU':numSTU,
-             'NUMENT':numENT,
+    context={
              'LIST_VERSIONS': df_list_versions,
              'SELECTED_VERSION':version_filtered,
              'STUyear':STUyear, 
