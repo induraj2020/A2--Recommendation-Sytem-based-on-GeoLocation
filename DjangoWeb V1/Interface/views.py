@@ -190,8 +190,16 @@ def forecast_predict(request):
     campus =  (request.GET.get('campus'))
     ville =  (request.GET.get('ville'))
 
-    # enterprise_list = predict_intership(program,campus,ville,PRG_ENT_df,Campus_ENT_df,ADR_ENT_df,Ent_nbIntern,w0,w1,w2)
-    # print(enterprise_list)
+    has_result=0
+    enterprise_list=[]
+    if program and campus and ville:
+        # XXXX - SOLVED THIS PROBLEM: PRG_ENT_df,Campus_ENT_df,ADR_ENT_df,Ent_nbIntern
+        # enterprise_list = predict_intership(program,campus,ville,PRG_ENT_df,Campus_ENT_df,ADR_ENT_df,Ent_nbIntern,w0,w1,w2)
+        data = [['AUBAY', 17, 31, 1], ['Osaka', 21, 19, 0], ['Total', 20, 11, 0]]   
+        enterprise_list = pd.DataFrame(data, columns = ['ENTERPRISE', 'nb_PRG', 'nb_Campus', 'nb_ADR' ]) 
+        print(enterprise_list)
+        has_result=1
+
 
     df=mergedTables.pdobjects.filter(idCSV=version_filtered).to_dataframe()
     df_new_prg = return_distinct_prg(df)
@@ -203,6 +211,8 @@ def forecast_predict(request):
              'prg': df_new_prg,
              'campus': df_new_campus,
              'ville': df_new_ville,
+             'enterprise_list':enterprise_list.to_dict('split'),
+             'has_result':has_result
             }
     return render(request, 'forecast_predict.html', context)
 
