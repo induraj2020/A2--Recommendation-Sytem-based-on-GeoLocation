@@ -154,7 +154,7 @@ def etl_mergetablesRF(request):
        
     ADR1,PRG1,STU1=UpdateMissingValues(ADR,PRG,STU,LOC )
     df=mergeTables(ADR1,PRG1,STU1)
-    # print(df)
+
     numberlines = df.ID_ANO.count()
     table = mergedTables.objects
     writeDF2Table(df, table, version, description )
@@ -268,20 +268,18 @@ def filter_chart(request):                           ## function to change the c
 
     if is_valid_queryparam(prg_filtered):
         qs=qs.filter(PRG=prg_filtered)
-        #qs= qs & query_results.filter(ADR_VILLE='CERGY' )
-        #print(str(qs.query))
-        #print(prg_filtered)
+
 
     if is_valid_queryparam(vil_filtered):
         qs=qs.filter(ADR_VILLE=vil_filtered)     
-       # print(qs)
+
 
     if is_valid_queryparam(cod_filtered):
         qs=qs.filter(ADR_CP=cod_filtered)
 
     if is_valid_queryparam(rem_filtered):
         qs=qs.filter(REMUNERATION=rem_filtered)
-       # print(type(qs))   ## class 'django.db.models.query.QuerySet'
+      
 
     elif is_valid_queryparam2(yfr_filtered,yto_filtered):
         if (yfr_filtered <= yto_filtered):                     ## since in database the years are in the format xxxx/yyyy, and is of object datatype, all these stuffs are wrtiten for splitting, type casting, and querring
