@@ -219,23 +219,30 @@ def forecast_predict(request):
 
 @login_required
 def forecast_predict_update(request):
-    # vERIFY the difference of versions between MERGEDTABLE and FORECAST_WS  
-    # df_list_versions=return_distinct_version(FORECAST_WS.pdobjects.all().to_dataframe())
-    df_list_versions=return_distinct_version(mergedTables.pdobjects.all().to_dataframe())
-    max_version=max(df_list_versions)
-    # version_filtered=max_version
-    # version_filtered=11
+    df_weights=FORECAST_WEIGHTS.pdobjects.all().to_dataframe()
+    df_weightsLastVersion=(int)(max(df_weights.idCSV))
+    mergedTableLastVersion=(int) (mergedTables.objects.all().aggregate(Max('idCSV'))['idCSV__max'])
 
-    # for i in range(12,16):
-    #     df=mergedTables.pdobjects.filter(idCSV=i).to_dataframe()
-    #     print('XXXX')
-    #     print(i)
-    #     print(len(df))
-    #     w0,w1,w2 = Regression(df)
-    #     print(i, w0, w1, w2)
+    do_update =  (request.GET.get('update'))
 
+    table = FORECAST_WEIGHTS.objects
+    if do_update:
+        for version in range(df_weightsLastVersion+1, mergedTableLastVersion+1):
+            df=mergedTables.pdobjects.filter(idCSV=version).to_dataframe()
+            if len(df.idCSV)>1:
+                print(len(df.idCSV))
+                w0, w1, w2 = Regression(df)
+                #Write table
+                table.create(
+                    w0           =w0,
+                    w1           =w1,
+                    w2           =w2,
+                    idCSV        =version
+                )
 
-    context={
+    context={'df_weights':df_weights.to_dict('split'),
+             'mergedTableLastVersion':mergedTableLastVersion,
+             'df_weightsLastVersion':df_weightsLastVersion
             }
     return render(request, 'forecast_predict_update.html', context)
 
