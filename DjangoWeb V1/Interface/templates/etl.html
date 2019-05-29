@@ -2,7 +2,7 @@
 
 {% block content %}
 
-
+<form method="GET" >
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
       <h1 class="h2">ETL</h1>
 
@@ -17,7 +17,7 @@
 
         <label  for="inputState" class="mdb-main-label">Select RAW DATA Version:</label>
         <select id="inputState" class="mdb-select md-form colorful-select dropdown-dark" name="version">
-          <option selected>{{ MAX_VERSION }}</option>
+          <option selected>{{ SELECTED_VERSION }}</option>
           {% for item in LIST_VERSIONS %}
           <option>{{ item }}</option>
           {% endfor %}
@@ -26,12 +26,11 @@
           <!-- <button type="submit" class="btn btn-primary"> Apply </button> -->
           <button type="submit" class="btn btn-sm btn-outline-primary">Apply</button>
         </div>
-      </div>
-      
+      </div>      
     </div>
-   
+</form>  
 
-    <h2>Missing Values</h2>
+    <h2>Missing Values - Data Version: {{ SELECTED_VERSION }}</h2>
   
     <div class="row">
       <div class="col-md-4 mb-4 text-center">

@@ -88,6 +88,7 @@ def etl(request):
     else:
         version_filtered=max_version
 
+    print(version_filtered)
     PRG=PRG [PRG['idCSV']==version_filtered ]
     ADR=ADR [ADR['idCSV']==version_filtered ]
     STU=STU [STU['idCSV']==version_filtered ]
