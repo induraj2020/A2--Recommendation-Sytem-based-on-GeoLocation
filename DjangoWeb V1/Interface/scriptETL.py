@@ -5,6 +5,12 @@ from sklearn import preprocessing
 from sklearn.preprocessing import LabelEncoder
 from math import radians, cos, sin, asin, sqrt
 from feature_selector import FeatureSelector
+import folium
+from dataCRUD.models import *
+from django_pandas.io import read_frame
+import gmaps
+import gmaps.datasets
+
 
 def showMissingValues(df):
     df[df == ""] = np.nan
@@ -234,11 +240,23 @@ def heatmap_ftr_slcor(df):                    # heatlap feature selector funcito
             k=k+1                                                      ##### so just multiplied by 10 .... THIS HAS TO BE CHECKED
         i_ind=i_ind+1
     print(new_df.head(3))
-    new_df.to_csv('H:\Documents\git\ADEO_Project\DjangoWeb\Interface\static\indu.csv',index=False)
+    new_df.to_csv('H:\Documents\gitnew\AdeoProject\DjangoWeb V1\Interface\static\indu.csv',index=False)
     return  None
 
+def map():
+    adr_lo=ADR_LOCATION.objects.all() 
+    qs_adr_lo= adr_lo
+    df_of_query_result_adr_lo= read_frame(qs_adr_lo)
+    newTable_adr_lo=df_of_query_result_adr_lo
 
-
+    newTable_adr_lo= newTable_adr_lo[['LAT','LON']]
+    m= folium.Map(location=[48.8566,2.3522],tiles = "Stamen Terrain",zoom_start=4)
+    for i in range(0,len(newTable_adr_lo)):
+        folium.Marker([newTable_adr_lo.iloc[i]['LAT'],newTable_adr_lo.iloc[i]['LON']]).add_to(m)
+    m.save("H:\\Documents\\gitnew\\AdeoProject\\DjangoWeb V1\\Interface\\templates\\map.html")
+    #m.save(os.path.join(BASE_DIR,"DjangoWeb V1\\Interface\\template\\map.html"))
+    return None
+    
 def change(num):
     magnitude = 0
     while abs(num) >= 1000:
@@ -316,10 +334,6 @@ def salary_avg(df,cat):
     mean=df.groupby(['SITE','PRG']).mean()
     ind=mean.index
     ind = np.array(ind.codes)
-
-
-
-
     cergy=np.zeros(leng)
     pau=np.zeros(leng)
     count=0
@@ -328,8 +342,6 @@ def salary_avg(df,cat):
         if i == 0:
             if np.isnan(mean['REMUNERATION'][count])==False:
                 cergy[ind[1][count]]="{:5.2f}".format(mean['REMUNERATION'][count])
-
-
         else:
             if np.isnan(mean['REMUNERATION'][count])==False:
                 pau[ind[1][count]]="{:5.2f}".format(mean['REMUNERATION'][count])
@@ -338,3 +350,10 @@ def salary_avg(df,cat):
         count=count+1
 
     return(cergy,pau,le)
+
+def topx(df,cat):
+    df2=df[['ID_ANO',cat]]
+    df2=df2.groupby([cat]).count().sort_values(['ID_ANO'],ascending=False)
+    top=list(df2['ID_ANO'][0:10])
+    label = df2.index[0:10]
+    return(top,label)

@@ -9,7 +9,8 @@ $.ajax({
         setchart()
         piechart()
         setchart2()
-        piechart2()
+        
+        hochart()
     },
     error: function(error_data){
         console.log("error")
@@ -166,39 +167,40 @@ function setchart2() {
       }
     }
 });
-
 }
 
-function piechart2() {
-    var ctx = document.getElementById('piechart2').getContext('2d');
-    var pieChart = new Chart(ctx, {
-    type: 'doughnut',
-    data:{
-        labels: ['Cergy','Pau'],
-        datasets: [{
-                    label: '% of students',
-                    data: {{ D_stddist }},
-            backgroundColor: ['#ffee58','#ffa726'],
-            borderColor: '#33691e',
-            borderWidth: 3,
-        }]
+function hochart() {
+    var ctx = document.getElementById('hochart').getContext('2d');
+    var hochart = new Chart(ctx, {
+    type: 'horizontalBar',
+    data: {
+      labels:['TOTAL - PAU', 'CGI - COURBEVOIE', 'AUBAY', 'NOVOSIBIRSK STATE UNIVERSITY', "VAL'EISTI", 'OSAKA PREFECTURE UNIVERSITY', 'DASSAULT SYSTEMES', 'SOCIETE GENERALE', 'SOPRA GROUP - LA DEFENSE', 'TALAN SOLUTIONS'],
+      datasets: [
+        {
+          label: "Amount of record(s)",
+          backgroundColor: ["rgba(13, 71, 161,0.3)", "rgba(1, 87, 155,0.3)","rgba(0, 96, 100,0.3)","rgba(0, 77, 64,0.3)","rgba(27, 94, 32,0.6)","rgba(51, 105, 30,0.6)","rgba(130, 119, 23,0.6)","rgba(245, 127, 23,0.6)","rgba(249, 168, 37,0.6)","rgba(251, 192, 45,0.6)","rgba(253, 216, 53,0.6)"],
+          data: {{ D_top }}
+        }
+      ]
     },
     options: {
-        title: {
-            display: false,
-            text: 'Students in Campus'
-        },
-        legend:{
-            display:true,
-            position:'bottom',
-        },
-    },
-    plugins:{
-        labels: {
-            render: 'percentage',
-            fontColor: ['green', 'white'],
-            precision: 2
-            }
+      legend: { display: false },
+      title: {
+        display: true,
+        text: ''
+      },
+        plugins: {
+          labels: false
+      },
+      scales: {
+        yAxes: [{ticks: {
+                mirror: true,
+                fontColor: "#3e2723",
+                padding:"-10",
+                rotate:"40"
+            }}],
+
+    }
     }
 });
 }
@@ -489,6 +491,18 @@ svg.append("text")
                 </div>
             </div>
         </div>
+
+        <div class="col-lg-8 " >
+          <div class="card-chart " >
+                <div class="card-header " >
+                  <h5 class="card-title text-center">Top 10 enterprises</h5>
+                    <p class="card-category text-center">amount of records work in the company</p>
+                    <div class="inside">
+                      <canvas class="my-4 w-10" id="hochart" width="100%" height="80" ></canvas>
+                  </div>
+                </div>
+          </div>
+      </div>
 
         <div id="my_dataviz"></div>
         <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>

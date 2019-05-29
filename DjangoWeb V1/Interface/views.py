@@ -44,7 +44,7 @@ def descriptiveStats(request):                         ## function to display ne
     d_stddist,l_site = stddist(df, 'SITE')
     c_cergy, c_pau, c_le =count_std(df,'PRG')
     s_cergy, s_pau, s_le =salary_avg(df, 'PRG')
-
+    top, label = topx(df,'ENTREPRISE')
 
 
 
@@ -68,6 +68,8 @@ def descriptiveStats(request):                         ## function to display ne
              'L_sal': list(s_le),
              'D_cergys': list(c_cergy),
              'D_paus': list(c_pau),
+             'D_top' :top,
+             'D_label':label.tolist(),
                 }
     return render(request, 'descriptiveStats2.html', context)
 
@@ -311,3 +313,11 @@ def filter_chart(request):                           ## function to change the c
 
   
     return render(request,'descriptivestats3.html',context)     # descriptivestats3 is a new html for displaying the altered graphs based on query results
+
+
+def mapindu(request):
+    #return HttpResponse('<h1> hiiiii </h1>')
+    
+
+    map()
+    return render(request, 'map.html', {'title': 'maps'})
