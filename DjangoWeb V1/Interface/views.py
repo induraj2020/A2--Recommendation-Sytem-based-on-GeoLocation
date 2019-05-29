@@ -26,11 +26,20 @@ def home(request):
 
 @login_required
 def descriptiveStats(request):                         ## function to display net charts without any filters being applied
-    query_results=mergedTables.objects.all()
     df=mergedTables.pdobjects.all().to_dataframe()
-    qs=mergedTables.objects.all().count()
-    numSTU=mergedTables.objects.values('ID_ANO').distinct().count()
-    numENT=mergedTables.objects.values('ENTREPRISE').distinct().count()
+    #Take the last version
+    df_list_versions=return_distinct_version(df)
+    max_version=max(df_list_versions)
+    
+    version_filtered =  (request.GET.get('version'))
+    if version_filtered:
+       version_filtered =  (int) (version_filtered)
+    else:
+        version_filtered=max_version
+
+    df=df [df['idCSV']==version_filtered ]
+
+
     STUyear=return_distinct_year(df)
     # STUQtdPerYear=return_distinct_STUQtdPerYear(df)
     dataGraph=[1000,10,552,2,63,830,10,84,400]
@@ -45,18 +54,12 @@ def descriptiveStats(request):                         ## function to display ne
     c_cergy, c_pau, c_le =count_std(df,'PRG')
     s_cergy, s_pau, s_le =salary_avg(df, 'PRG')
 
-
-
-
-
-    context={'query_results':query_results,
-             'NUMBERLINES':qs,
-             'NUMBERSTU':numSTU,
-             'NUMENT':numENT,
+    context={'LIST_VERSIONS': df_list_versions,
+             'SELECTED_VERSION':version_filtered,
              'STUyear':STUyear, 
              'DATAGRAPH':dataGraph,
              'heat_value':heat_value,
-             'Mean_sal':mean_sal,
+             'mean_sal':mean_sal,
              'num_records':num_records,
              'num_std':num_std,
              'num_entre':num_entre,
@@ -87,8 +90,7 @@ def etl(request):
        version_filtered =  (int) (version_filtered)
     else:
         version_filtered=max_version
-
-    print(version_filtered)
+    
     PRG=PRG [PRG['idCSV']==version_filtered ]
     ADR=ADR [ADR['idCSV']==version_filtered ]
     STU=STU [STU['idCSV']==version_filtered ]
@@ -128,7 +130,7 @@ def etl_mergetables(request):
     df=deleteMissingValues(df)
     numberlines = df.ID_ANO.count()
     table = mergedTables.objects
-    #writeDF2Table(df, table, version, description )
+    writeDF2Table(df, table, version, description )
 
     df=showMissingValues( mergedTables.pdobjects.filter(idCSV=version).to_dataframe() )
     context={'MERGEDTABLES' :df.to_dict('split') ,
@@ -152,10 +154,10 @@ def etl_mergetablesRF(request):
        
     ADR1,PRG1,STU1=UpdateMissingValues(ADR,PRG,STU,LOC )
     df=mergeTables(ADR1,PRG1,STU1)
-    print(df)
+    # print(df)
     numberlines = df.ID_ANO.count()
     table = mergedTables.objects
-    #writeDF2Table(df, table, version, description )
+    writeDF2Table(df, table, version, description )
 
     df=showMissingValues( mergedTables.pdobjects.filter(idCSV=version).to_dataframe() )
     context={'MERGEDTABLES' :df.to_dict('split') ,

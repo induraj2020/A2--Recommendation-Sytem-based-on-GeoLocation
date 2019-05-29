@@ -65,7 +65,6 @@ def mergeTables(ADR,PRG,STU):
     return(df)
 
 def deleteMissingValues(df):
-    #print(df[pd.notnull(df['REMUNERATION'])])
     df=df[pd.notnull(df['REMUNERATION'])]
     df=df[pd.notnull(df['PRG'])]  
     df=df[pd.notnull(df['ANNEE_SCOLAIRE'])]  
@@ -216,12 +215,12 @@ def heatmap_ftr_slcor(df):                    # heatlap feature selector funcito
     cor_out.drop(columns='idCSV',inplace=True)
     cor_out.drop(columns='ID_ANO',inplace=True)                               ## here i dropping unwanted columns
     cor_out.drop(columns='id',inplace=True)
-    print(cor_out.columns)
+    # print(cor_out.columns)
     new_df= pd.DataFrame(columns=['group','variable','value'])                  # new dataframe
     new_df.columns
     k=0
     li=list(cor_out.columns)
-    print(li)
+    # print(li)
     length=len(li)
     #cor_out.reset_index(inplace=True, drop=True)
     i_ind=0
@@ -236,7 +235,7 @@ def heatmap_ftr_slcor(df):                    # heatlap feature selector funcito
             new_df.loc[k,'value']=cor_out.loc[i,li[i_ind]]*10          ##### since all the values are very very less, there aren't showing significant difference in heatmap
             k=k+1                                                      ##### so just multiplied by 10 .... THIS HAS TO BE CHECKED
         i_ind=i_ind+1
-    print(new_df.head(3))
+    # print(new_df.head(3))
     new_df.to_csv( os.path.join(BASE_DIR, 'DjangoWeb V1\Interface\static\indu.csv') ,index=False)
     return  None
 
@@ -254,20 +253,26 @@ def change(num):
 #num of records
 def num_records1(df):
     amount = len(df.index)
-    return(change(amount))
+    # return(change(amount))
+    return((amount))
 
 #num of students
 def num_std1(df):
     amount=len(df['ID_ANO'].unique())
-    return(change(amount))
+    # return(change(amount))
+    return((amount))
+
 #num of enterprise
 def num_entre1(df):
     amount=len(df['ENTREPRISE'].unique())
-    return (change(amount))
+    # return (change(amount))
+    return ((amount))
+
 #mean of salary
 def mean_sal1(df):
     df['REMUNERATION'] = pd.to_numeric(df['REMUNERATION'], errors='coerce')
     meansal = df['REMUNERATION'].mean()
+    # print(meansal)
     meansal = "€ {:,.2f}".format(meansal)
     return(meansal)
 
