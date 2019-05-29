@@ -111,8 +111,14 @@ def etl(request):
 def etl_mergetables(request):    
     version=int(mergedTables.objects.all().aggregate(Max('idCSV'))['idCSV__max']) + 1
     description='Delete Null Values'
+    df_list_versions=return_distinct_version(PRG_STUDENT_SITE.pdobjects.all().to_dataframe())
+    max_version=max(df_list_versions)
 
     version_filtered =  (request.GET.get('version'))
+    if version_filtered:
+       version_filtered =  (int) (version_filtered)
+    else:
+        version_filtered=max_version
 
     ADR=redefineDFTypes(ADR_STUDENTS.pdobjects.filter(idCSV=version_filtered).to_dataframe())    
     PRG=redefineDFTypes(PRG_STUDENT_SITE.pdobjects.filter(idCSV=version_filtered).to_dataframe())
@@ -149,7 +155,7 @@ def etl_mergetablesRF(request):
     print(df)
     numberlines = df.ID_ANO.count()
     table = mergedTables.objects
-    writeDF2Table(df, table, version, description )
+    #writeDF2Table(df, table, version, description )
 
     df=showMissingValues( mergedTables.pdobjects.filter(idCSV=version).to_dataframe() )
     context={'MERGEDTABLES' :df.to_dict('split') ,
