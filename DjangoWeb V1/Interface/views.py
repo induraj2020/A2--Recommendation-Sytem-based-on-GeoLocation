@@ -275,6 +275,42 @@ def forecast_predict_update(request):
     return render(request, 'forecast_predict_update.html', context)
 
 @login_required
+def forecast_enterprise(request):
+    df=STUDENT_INTERNSHIP.pdobjects.all().to_dataframe()
+    list_versions=return_distinct_version(df)
+    max_version=max(list_versions)
+
+    version_filtered =  (request.GET.get('version'))
+    if version_filtered:
+       version_filtered =  (int) (version_filtered)
+    else:
+        version_filtered=max_version
+
+    df=df[ df['idCSV']==version_filtered ]
+
+    num_enterp=len(df['ENTREPRISE'].unique())
+    num_stu=len(df['ID_ANO'].unique())
+    df['YEAR']=df['ANNEE_SCOLAIRE'].str[:4]
+    df2016=df[ df['YEAR']=='2016' ]
+    num_entrep2016=len(df2016['ID_ANO'].unique())
+    mean_sal=mean_sal1(df)
+
+    enterpYear= [2010,2011,2012,2014, 2015]
+    enterpQTD=[400, 550, 650, 700, 300 ]
+
+    context={
+            'list_versions':list_versions,
+            'version_filtered':version_filtered,
+            'num_enterp':num_enterp,
+            'num_stu':num_stu,
+            'num_entrep2016':num_entrep2016,
+            'mean_sal':mean_sal,
+            'enterpYear':enterpYear,
+            'enterpQTD':enterpQTD
+            }
+    return render(request, 'forecast_enterprise.html', context)
+
+@login_required
 def maps(request):
     return render(request, 'maps.html')
 

@@ -328,6 +328,14 @@ def mean_sal1(df):
     meansal = "€ {:,.2f}".format(meansal)
     return(meansal)
 
+#mean of salary
+def mean_sal2(df):
+    df['REMUNERATION'] = pd.to_numeric(df['REMUNERATION'], errors='coerce')
+    meansal = df['REMUNERATION'].mean()
+    # print(meansal)
+    meansal = "€ {:,.2f}".format(meansal)
+    return(meansal)
+
 def stddist(df,cat):
     le = preprocessing.LabelEncoder()
     le.fit(df[cat][df[cat].notnull()])
