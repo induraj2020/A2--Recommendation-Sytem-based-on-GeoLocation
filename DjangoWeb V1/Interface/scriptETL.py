@@ -85,17 +85,7 @@ def writeDF2Table(df, table, version, description):
     
     a=table.count()
     for index, rows in df.iterrows():
-
-        # if str(rows.ADR_CP).isdigit():
-        #     rows.ADR_CP= int(rows.ADR_CP)
-        # else:
-        #     rows.ADR_CP=0
-        
-        # if str(rows.CODE_POSTAL).isdigit():
-        #     rows.CODE_POSTAL= int(rows.CODE_POSTAL)
-        # else:
-        #     rows.CODE_POSTAL=0
-        
+      
         table.create(
             ID_ANO          =rows.ID_ANO      ,
             PRG             =rows.PRG         ,
@@ -111,6 +101,15 @@ def writeDF2Table(df, table, version, description):
             PAYS            =rows.PAYS        ,
             SUJET           =rows.SUJET       ,
             REMUNERATION    =rows.REMUNERATION,
+            ENT_LAT         =rows.ENT_LAT      ,
+            ENT_LON         =rows.ENT_LON       ,
+            ADR_LAT         =rows.ADR_LAT       ,
+            ADR_LON         =rows.ADR_LON       ,
+            SITE_LAT        =rows.SITE_LAT      ,
+            SITE_LON        =rows.SITE_LON      ,
+            home_campus     =rows.home_campus   ,
+            home_entreprise =rows.home_entreprise,
+            campus_entreprise =rows.campus_entreprise,
             idCSV           =version,
             idCSVDescript   =description
          )
@@ -333,9 +332,6 @@ def salary_avg(df,cat):
     ind=mean.index
     ind = np.array(ind.codes)
 
-
-
-
     cergy=np.zeros(leng)
     pau=np.zeros(leng)
     count=0
@@ -354,3 +350,86 @@ def salary_avg(df,cat):
         count=count+1
 
     return(cergy,pau,le)
+
+
+# Catch location from table df_location
+def CatchLocation(df, df_location):
+    df['ADR_LAT']=None
+    df['ADR_LON']=None
+    df['SITE_LAT']=None
+    df['SITE_LON']=None
+    df['ENT_LAT']=None
+    df['ENT_LON']=None
+    
+    for i in (df.index):
+        for j in (df_location.index):
+            if df_location.loc[j,'VILLE']==df.loc[i,'ADR_VILLE']:
+                    df.loc[i,'ADR_LAT']=df_location.loc[j,'LAT']
+                    df.loc[i,'ADR_LON']=df_location.loc[j,'LON']
+                    break
+
+    for i in (df.index):
+        for j in (df_location.index):
+            if df_location.loc[j,'VILLE']==df.loc[i,'VILLE']:
+                    df.loc[i,'ENT_LAT']=df_location.loc[j,'LAT']
+                    df.loc[i,'ENT_LON']=df_location.loc[j,'LON']
+                    break
+                    
+    for j in (df_location.index):
+        if df_location.loc[j,'VILLE']=='EISTI Cergy':
+            lat=df_location.loc[j,'LAT']
+            lon=df_location.loc[j,'LON']
+            break
+
+    for i in df[df["SITE"]=='Cergy'].index:
+                df.loc[i,"SITE_LAT"]=lat
+                df.loc[i,"SITE_LON"]=lon
+                
+    for j in (df_location.index):
+        if df_location.loc[j,'VILLE']=='EISTI Pau':
+            lat=df_location.loc[j,'LAT']
+            lon=df_location.loc[j,'LON'] 
+            break   
+
+    for i in df[df["SITE"]=='Pau'].index:
+                df.loc[i,"SITE_LAT"]=lat
+                df.loc[i,"SITE_LON"]=lon
+    
+    
+    df['ENT_LAT']=df['ENT_LAT'].astype(float)
+    df['ENT_LON']=df['ENT_LON'].astype(float)
+    df['ADR_LAT']=df['ADR_LAT'].astype(float)
+    df['ADR_LON']=df['ADR_LON'].astype(float)
+    df['SITE_LAT']=df['SITE_LAT'].astype(float)
+    df['SITE_LON']=df['SITE_LON'].astype(float)
+    
+    df=df.dropna(subset=['ENT_LAT'])
+    df=df.dropna(subset=['ADR_LAT'])
+    df=df.dropna(subset=['SITE_LAT'])
+    
+    return df
+
+
+# Calculate distances
+def haversine(lon1, lat1, lon2, lat2): 
+    lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
+    dlon = lon2 - lon1 
+    dlat = lat2 - lat1 
+    a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
+    c = 2 * asin(sqrt(a)) 
+    r = 6371 
+    return c * r * 1000
+    
+def UpdateDistance(df):
+    df['home_campus']=None
+    df['home_entreprise']=None
+    df['campus_entreprise']=None
+    for i in df.index:
+        df.loc[i,"home_campus"]=haversine(df.loc[i,"ADR_LON"],df.loc[i,"ADR_LAT"],df.loc[i,"SITE_LON"],df.loc[i,"SITE_LAT"])
+        df.loc[i,"home_entreprise"]=haversine(df.loc[i,"ADR_LON"],df.loc[i,"ADR_LAT"],df.loc[i,"ENT_LON"],df.loc[i,"ENT_LAT"])
+        df.loc[i,"campus_entreprise"]=haversine(df.loc[i,"SITE_LON"],df.loc[i,"SITE_LAT"],df.loc[i,"ENT_LON"],df.loc[i,"ENT_LAT"])
+    df['home_campus']=df['home_campus'].astype(float)
+    df['home_entreprise']=df['home_entreprise'].astype(float)
+    df['campus_entreprise']=df['campus_entreprise'].astype(float)
+    
+    return df

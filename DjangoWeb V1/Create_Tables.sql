@@ -10,6 +10,29 @@
 
 -- ALTER TABLE "PRG_STUDENT_SITE" ADD COLUMN idCSV int;
 
+-- DELETE FROM PRG_STUDENT_SITE WHERE  idCSV=3; 
+-- DELETE FROM STUDENT_INTERNSHIP WHERE  idCSV=3; 
+-- DELETE FROM "ADR_STUDENTS" WHERE  idCSV=3; 
+-- DELETE FROM mergedtables WHERE  mergedtables.idCSV>2;
+
+-- DELETE FROM mergedtables WHERE  mergedtables.idCSV>2; 
+-- select distinct idCSV FROM mergedtables; 
+-- select distinct idCSV FROM ADR_STUDENTS; 
+
+-- DELETE FROM "FORECAST_WEIGHTS" where idCSV>=2; 
+-- select * from FORECAST_WEIGHTS;
+
+-- VACUUM;
+
+-- ALTER TABLE "mergedtables" ADD COLUMN ENT_LAT REAL;
+-- ALTER TABLE "mergedtables" ADD COLUMN ENT_LON REAL;
+-- ALTER TABLE "mergedtables" ADD COLUMN ADR_LAT REAL;
+-- ALTER TABLE "mergedtables" ADD COLUMN ADR_LON REAL;
+-- ALTER TABLE "mergedtables" ADD COLUMN SITE_LAT REAL;
+-- ALTER TABLE "mergedtables" ADD COLUMN SITE_LON REAL;
+-- ALTER TABLE "mergedtables" ADD COLUMN home_campus REAL;
+-- ALTER TABLE "mergedtables" ADD COLUMN home_entreprise REAL;
+-- ALTER TABLE "mergedtables" ADD COLUMN campus_entreprise REAL;
 
 -- INSERT INTO mergedtables (
 --     ID_ANO , PRG , 

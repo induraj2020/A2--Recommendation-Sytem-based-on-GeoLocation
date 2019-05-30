@@ -126,15 +126,25 @@ def etl_mergetables(request):
     ADR=redefineDFTypes(ADR_STUDENTS.pdobjects.filter(idCSV=version_filtered).to_dataframe())    
     PRG=redefineDFTypes(PRG_STUDENT_SITE.pdobjects.filter(idCSV=version_filtered).to_dataframe())
     STU=redefineDFTypes(STUDENT_INTERNSHIP.pdobjects.filter(idCSV=version_filtered).to_dataframe())
-    
+    df_location=ADR_LOCATION.pdobjects.all().to_dataframe()
+
     df=mergeTables(ADR,PRG,STU)
+    df=df.drop_duplicates()
+
+    df=CatchLocation(df, df_location)
+    df.drop_duplicates()
+
+    df=UpdateDistance(df)
+    df.drop_duplicates()
+    
     df=deleteMissingValues(df)
+
     numberlines = df.ID_ANO.count()
     table = mergedTables.objects
     writeDF2Table(df, table, version, description )
 
-    df=showMissingValues( mergedTables.pdobjects.filter(idCSV=version).to_dataframe() )
-    context={'MERGEDTABLES' :df.to_dict('split') ,
+    df_missing=showMissingValues( df )
+    context={'MERGEDTABLES' :df_missing.to_dict('split') ,
              'NUMBERLINES'  :numberlines ,
              'VERSION'      :str(version) + " - " + description
             }
@@ -152,16 +162,28 @@ def etl_mergetablesRF(request):
     PRG=redefineDFTypes(PRG_STUDENT_SITE.pdobjects.filter(idCSV=version_filtered).to_dataframe())
     STU=redefineDFTypes(STUDENT_INTERNSHIP.pdobjects.filter(idCSV=version_filtered).to_dataframe())
     LOC=redefineDFTypes(ADR_LOCATION.pdobjects.all().to_dataframe())
-       
+    df_location=ADR_LOCATION.pdobjects.all().to_dataframe()
+    
     ADR1,PRG1,STU1=UpdateMissingValues(ADR,PRG,STU,LOC )
     df=mergeTables(ADR1,PRG1,STU1)
+    print(df.ID_ANO.count())
+    df=df.drop_duplicates()
+    print(df.ID_ANO.count())
+
+    df=CatchLocation(df, df_location)
+    df.drop_duplicates()
+    df=UpdateDistance(df)
+    df.drop_duplicates()
+
+    print(df.ID_ANO.count())
+    print(df.head())
 
     numberlines = df.ID_ANO.count()
     table = mergedTables.objects
     writeDF2Table(df, table, version, description )
 
-    df=showMissingValues( mergedTables.pdobjects.filter(idCSV=version).to_dataframe() )
-    context={'MERGEDTABLES' :df.to_dict('split') ,
+    df_missing=showMissingValues( df )
+    context={'MERGEDTABLES' :df_missing.to_dict('split') ,
              'NUMBERLINES'  :numberlines ,
              'VERSION'      :str(version) + " - " + description
             }
