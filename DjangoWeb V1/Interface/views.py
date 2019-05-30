@@ -404,9 +404,49 @@ def filter_chart(request):                           ## function to change the c
     return render(request,'descriptivestats3.html',context)     # descriptivestats3 is a new html for displaying the altered graphs based on query results
 
 
+
+def search_result(request):
+
+    df_merged=mergedTables.pdobjects.all().to_dataframe()
+    df_list_versions=return_distinct_version(df_merged)
+    max_version=max(df_list_versions)
+    version_filtered=max_version
+    qs=mergedTables.objects.filter(idCSV=version_filtered)
+    searched= request.GET.get('search_bar')
+
+
+
+    if(qs.filter(ID_ANO=searched)):
+        qs=qs.filter(ID_ANO=searched)
+    elif(qs.filter(PRG=searched)):    
+        qs=qs.filter(PRG=searched)
+    elif(qs.filter(ANNEE_SCOLAIRE=searched)): 
+        qs=qs.filter(ANNEE_SCOLAIRE=searched)
+    elif(qs.filter(SITE=searched)):
+        qs=qs.filter(SITE=searched)
+    elif(qs.filter(ENTREPRISE=searched)):   
+        qs=qs.filter(ENTREPRISE=searched)
+    elif(qs.filter(REMUNERATION=searched)):                              ### But for some reason remuneration based filtering is not working while all others work
+        qs=qs.filter(REMUNERATION=searched)
+    print(qs)
+    
+    df=read_frame(qs)
+
+    num_records=num_records1(df)
+    num_std=num_std1(df)
+    num_entre=num_entre1(df)
+    mean_sal=mean_sal1(df)
+    context={
+            'searched_result':qs,
+            'mean_sal':mean_sal,
+             'num_records':num_records,
+             'num_std':num_std,
+             'num_entre':num_entre,
+            }
+    return render(request,'searching.html',context)
+    #return HttpResponse('<h1> hiiiii </h1>')
+
 def mapindu(request):
     #return HttpResponse('<h1> hiiiii </h1>')
-    
-
     map()
     return render(request, 'map.html', {'title': 'maps'})

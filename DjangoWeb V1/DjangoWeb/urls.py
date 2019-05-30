@@ -36,6 +36,7 @@ urlpatterns = [
     path('Interface/', views.home, name='home'),
     path('Interface/descriptiveStats', views.descriptiveStats, name='descriptiveStats'),
     path('Interface/filter_chart',views.filter_chart, name='filter_chart'),
+    path('Interface/search_result',views.search_result, name='search_result'),
     path('Interface/maps', views.maps, name='maps'),
     path('Interface/etl', views.etl, name='etl'),
     path('Interface/etl_mergetables', views.etl_mergetables, name='etl_mergetables'),
