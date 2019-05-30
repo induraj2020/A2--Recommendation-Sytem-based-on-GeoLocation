@@ -223,21 +223,12 @@ def forecast_predict(request):
     if program_selected and campus_selected and ville_selected:
         if (program_selected != 'Choose...') and (campus_selected != 'Choose...') and (ville_selected != 'Choose...'):            
             start_time = time.time()
-            PRG_ENT_df, Campus_ENT_df, ADR_ENT_df, Ent_nbIntern = Regression_DF(df)
+            PRG_ENT_df, Campus_ENT_df, ADR_ENT_df, Ent_nbIntern = Regression_DF(df,version_filtered)
             print("Reg_DF: --- %s seconds ---" % (time.time() - start_time))
-            print(PRG_ENT_df.head())
-            print(Campus_ENT_df.head())
-            print(ADR_ENT_df.head())
-            print(Ent_nbIntern.head())
             enterprise_list = predict_intership(program_selected,campus_selected,ville_selected,PRG_ENT_df,Campus_ENT_df,ADR_ENT_df,Ent_nbIntern,w0,w1,w2)
             print("Reg   : --- %s seconds ---" % (time.time() - start_time))
-            # data = [['AUBAY', 17, 31, 1], ['Osaka', 21, 19, 0], ['Total', 20, 11, 0]]   
-            # enterprise_list = pd.DataFrame(data, columns = ['ENTERPRISE', 'nb_PRG', 'nb_Campus', 'nb_ADR' ]) 
-            print(enterprise_list)
             has_result=1
-
-
-    
+   
     df_new_prg = return_distinct_prg(df)
     df_new_campus = return_distinct_site(df)
     df_new_ville = return_distinct_ville(df)
@@ -269,7 +260,7 @@ def forecast_predict_update(request):
             df=mergedTables.pdobjects.filter(idCSV=version).to_dataframe()
             if len(df.idCSV)>1:
                 print(len(df.idCSV))
-                w0, w1, w2 = Regression(df)
+                w0, w1, w2 = Regression(df, version)
                 #Write table
                 table.create(
                     w0           =w0,
@@ -482,5 +473,5 @@ def search_result(request):
 
 def mapindu(request):
     #return HttpResponse('<h1> hiiiii </h1>')
-    map()
+    map2()
     return render(request, 'map.html', {'title': 'maps'})

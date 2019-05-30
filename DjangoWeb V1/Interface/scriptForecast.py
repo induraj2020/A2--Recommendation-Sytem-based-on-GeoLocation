@@ -5,6 +5,11 @@ from sklearn import preprocessing
 from sklearn.preprocessing import LabelEncoder
 from math import radians, cos, sin, asin, sqrt
 
+import os
+import posixpath
+from settings import BASE_DIR
+from pathlib import Path
+
 def predict_intership(PRG,Campus,ADR,PRG_ENT_df,Campus_ENT_df,ADR_ENT_df,Ent_nbIntern,w0,w1,w2):
     df_suggestion=pd.DataFrame()
     df_suggestion["PRG"]=PRG_ENT_df[PRG]
@@ -31,37 +36,57 @@ def predict_intership(PRG,Campus,ADR,PRG_ENT_df,Campus_ENT_df,ADR_ENT_df,Ent_nbI
     
     return df_result
 
-def Regression_DF(df):
-    #We consider only the enterprises with more than 5 interns
-    Ent_nbIntern=df["ENTREPRISE"].value_counts()
-    Ent_nbIntern=Ent_nbIntern[Ent_nbIntern>5]
-
-    PRG_ENT={}
-    for prg in df["PRG"].unique():
-        PRG_ENT[prg]=[]
-        for ent in Ent_nbIntern.index:
-            PRG_ENT[prg].append(len(df[(df["PRG"]==prg) & (df["ENTREPRISE"]==ent)]))
-    PRG_ENT_df=pd.DataFrame(PRG_ENT)
+def Regression_DF(df, version):
+    #Verify already if exist files:
+    PRG_ENT_file=Path( os.path.join(BASE_DIR, 'DjangoWeb V1\Interface\static\PRG_ENT_df_'+str(version)+'.pkl'))
+    Campus_ENT_file=Path( os.path.join(BASE_DIR, 'DjangoWeb V1\Interface\static\Campus_ENT_df_'+str(version)+'.pkl'))
+    ADR_ENT_file=Path( os.path.join(BASE_DIR, 'DjangoWeb V1\Interface\static\ADR_ENT_df_'+str(version)+'.pkl'))
+    Ent_nbIntern_file=Path( os.path.join(BASE_DIR, 'DjangoWeb V1\Interface\static\Ent_nbIntern_'+str(version)+'.pkl'))
     
-    Campus_ENT={}
-    for cam in df["SITE"].unique():
-        Campus_ENT[cam]=[]
-        for ent in Ent_nbIntern.index:
-            Campus_ENT[cam].append(len(df[(df["SITE"]==cam) & (df["ENTREPRISE"]==ent)]))  
-    Campus_ENT_df=pd.DataFrame(Campus_ENT)
+    if PRG_ENT_file.is_file(): #and
+        PRG_ENT_df = pd.read_pickle(PRG_ENT_file)
+        Campus_ENT_df = pd.read_pickle(Campus_ENT_file)
+        ADR_ENT_df = pd.read_pickle(ADR_ENT_file)
+        Ent_nbIntern = pd.read_pickle(Ent_nbIntern_file)
 
-    ADR_ENT={}
-    for adr in df["ADR_VILLE"].unique():
-        ADR_ENT[adr]=[]
-        for ent in Ent_nbIntern.index:
-            ADR_ENT[adr].append(len(df[(df["ADR_VILLE"]==adr) & (df["ENTREPRISE"]==ent)]))
-    ADR_ENT_df=pd.DataFrame(ADR_ENT)
+    else:
+
+        #We consider only the enterprises with more than 5 interns
+        Ent_nbIntern=df["ENTREPRISE"].value_counts()
+        Ent_nbIntern=Ent_nbIntern[Ent_nbIntern>5]
+
+        PRG_ENT={}
+        for prg in df["PRG"].unique():
+            PRG_ENT[prg]=[]
+            for ent in Ent_nbIntern.index:
+                PRG_ENT[prg].append(len(df[(df["PRG"]==prg) & (df["ENTREPRISE"]==ent)]))
+        PRG_ENT_df=pd.DataFrame(PRG_ENT)
+        
+        Campus_ENT={}
+        for cam in df["SITE"].unique():
+            Campus_ENT[cam]=[]
+            for ent in Ent_nbIntern.index:
+                Campus_ENT[cam].append(len(df[(df["SITE"]==cam) & (df["ENTREPRISE"]==ent)]))  
+        Campus_ENT_df=pd.DataFrame(Campus_ENT)
+
+        ADR_ENT={}
+        for adr in df["ADR_VILLE"].unique():
+            ADR_ENT[adr]=[]
+            for ent in Ent_nbIntern.index:
+                ADR_ENT[adr].append(len(df[(df["ADR_VILLE"]==adr) & (df["ENTREPRISE"]==ent)]))
+        ADR_ENT_df=pd.DataFrame(ADR_ENT)
+
+        # Save DF to File
+        PRG_ENT_df.to_pickle( os.path.join(BASE_DIR, 'DjangoWeb V1\Interface\static\PRG_ENT_df_'+str(version)+'.pkl'))
+        Campus_ENT_df.to_pickle( os.path.join(BASE_DIR, 'DjangoWeb V1\Interface\static\Campus_ENT_df_'+str(version)+'.pkl'))
+        ADR_ENT_df.to_pickle( os.path.join(BASE_DIR, 'DjangoWeb V1\Interface\static\ADR_ENT_df_'+str(version)+'.pkl'))
+        Ent_nbIntern.to_pickle( os.path.join(BASE_DIR, 'DjangoWeb V1\Interface\static\Ent_nbIntern_'+str(version)+'.pkl'))
 
     return PRG_ENT_df, Campus_ENT_df, ADR_ENT_df, Ent_nbIntern
 
-def Regression(df):
+def Regression(df, version):
     
-    PRG_ENT_df, Campus_ENT_df, ADR_ENT_df, Ent_nbIntern = Regression_DF(df)
+    PRG_ENT_df, Campus_ENT_df, ADR_ENT_df, Ent_nbIntern = Regression_DF(df, version)
   
     M=len(Ent_nbIntern)
     Series_Ent=pd.Series(Ent_nbIntern.index)
@@ -106,7 +131,7 @@ def Regression(df):
 
 def GradientDescent(X,y,w0,w1,w2,M):
     learning_rate=0.05
-    for i in range(10):
+    for i in range(30):
         w0 = w0 - learning_rate*differncial_w0(X,y,w0,w1,w2,M)
         w1 = w1 - learning_rate*differncial_w1(X,y,w0,w1,w2,M)
         w2 = w2 - learning_rate*differncial_w2(X,y,w0,w1,w2,M)
