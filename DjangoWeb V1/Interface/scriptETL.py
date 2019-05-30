@@ -6,10 +6,13 @@ from sklearn.preprocessing import LabelEncoder
 from math import radians, cos, sin, asin, sqrt
 from feature_selector import FeatureSelector
 import folium
+from folium import plugins
 from dataCRUD.models import *
 from django_pandas.io import read_frame
 import gmaps
 import gmaps.datasets
+from folium.plugins import HeatMap
+from folium.plugins import MarkerCluster
 
 import os
 import posixpath
@@ -251,15 +254,41 @@ def heatmap_ftr_slcor(df):                    # heatlap feature selector funcito
     return  None
 
 def map2():
-    adr_lo=ADR_LOCATION.objects.all() 
-    qs_adr_lo= adr_lo
-    df_of_query_result_adr_lo= read_frame(qs_adr_lo)
-    newTable_adr_lo=df_of_query_result_adr_lo
+    adr=mergedTables.objects.all() 
+    qs_adr= adr
+    df_of_query_result_adr= read_frame(qs_adr)
+    newTable_adr=df_of_query_result_adr
+    m= folium.Map(location=[48.8566,2.3522],tiles = "Stamen Toner",zoom_start=2)
+    #cergy=['49.034955','2.069925']
+    #pau=['43.319568','-0.360571']
+    newTable_ent_adr= newTable_adr[['ENT_LAT','ENT_LON']]
+    newTable_stu_adr= newTable_adr[['ADR_LAT','ADR_LON']]
+    newTable_site_adr= newTable_adr[['SITE_LAT','SITE_LON']]
+    newTable_ent_adr= newTable_ent_adr.dropna(axis=0, subset=['ENT_LAT','ENT_LON'])
+    newTable_stu_adr= newTable_stu_adr.dropna(axis=0, subset=['ADR_LAT','ADR_LON'])
+    newTable_site_adr= newTable_site_adr.dropna(axis=0, subset=['SITE_LAT','SITE_LON'])
+    #newTable_ent_adr= [[row['ENT_LAT'],row['ENT_LON']] for index,row in newTable_ent_adr.iterrows() ]
+    #newTable_stu_adr= [[row['ADR_LAT'],row['ADR_LON']] for index,row in newTable_stu_adr.iterrows() ]
+    #HeatMap(cergy).add_to(m)
+    HeatMap(newTable_stu_adr).add_to(m)
+    mc = MarkerCluster()
+    folium.CircleMarker([49.034955, 2.069925],
+                    radius=20,
+                    popup='Cergy Campus',
+                    color='red',
+                    ).add_to(m)
+    folium.CircleMarker([43.319568, -0.360571],
+                    radius=20,
+                    popup='Pau Campus',
+                    color='red',
+                    ).add_to(m)
 
-    newTable_adr_lo= newTable_adr_lo[['LAT','LON']]
-    m= folium.Map(location=[48.8566,2.3522],tiles = "Stamen Terrain",zoom_start=4)
-    for i in range(0,len(newTable_adr_lo)):
-        folium.Marker([newTable_adr_lo.iloc[i]['LAT'],newTable_adr_lo.iloc[i]['LON']]).add_to(m)
+    for i in range(0,len(newTable_stu_adr)):
+        #mc.add_child(folium.Marker([newTable_ent_adr.iloc[i]['ENT_LAT'],newTable_ent_adr.iloc[i]['ENT_LON']],icon=folium.Icon(icon='cloud'))).add_to(m)
+        mc.add_child(folium.Marker([newTable_ent_adr.iloc[i]['ENT_LAT'],newTable_ent_adr.iloc[i]['ENT_LON']])).add_to(m)
+        #mc.add_child(folium.Marker([newTable_stu_adr.iloc[i]['ADR_LAT'],newTable_stu_adr.iloc[i]['ADR_LON']],icon=folium.Icon(color='red'))).add_to(m)
+        #folium.Marker([newTable_site_adr.iloc[i]['SITE_LAT'],newTable_site_adr.iloc[i]['SITE_LON']],icon=folium.Icon(icon='green')).add_to(m)
+     #   m.add_children(plugins.HeatMap(newTable_adr_lo, radius=15))
     m.save("H:\\Documents\\gitnew\\AdeoProject\\DjangoWeb V1\\Interface\\templates\\map.html")
     #m.save(os.path.join(BASE_DIR,"DjangoWeb V1\\Interface\\template\\map.html"),index=False)
     return None
