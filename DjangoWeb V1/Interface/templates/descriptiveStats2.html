@@ -9,7 +9,6 @@ $.ajax({
         setchart()
         piechart()
         setchart2()
-        
         hochart()
     },
     error: function(error_data){
@@ -205,7 +204,7 @@ function hochart() {
 });
 }
 
-var margin = {top: 80, right: 10, bottom: 80, left: 150},
+var margin = {top: 80, right: 10, bottom: 140, left: 150},
   width = 800 - margin.left - margin.right,
   height = 800 - margin.top - margin.bottom;
 
@@ -231,10 +230,14 @@ var svg = d3.select("#my_dataviz")
     .domain(myGroups)
     .padding(0.1);
   svg.append("g")
-    .style("font-size", 4)
+    .style("font-size", 15)
     .attr("transform", "translate(0," + height + ")")
     .call(d3.axisBottom(x).tickSize(0))
-    .select(".domain").remove()
+    .selectAll("text")  
+            .style("text-anchor", "end")
+            .attr("dx", "-.8em")
+            .attr("dy", ".15em")
+            .attr("transform", "rotate(-65)" );
 
   // Build Y scales and axis:
   var y = d3.scaleBand()

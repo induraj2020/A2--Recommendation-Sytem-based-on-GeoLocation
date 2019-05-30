@@ -225,9 +225,8 @@ def heatmap_ftr_slcor(df):                    # heatlap feature selector funcito
     
     fs = FeatureSelector(data = le_df, labels = df['REMUNERATION'])
     cor_out=le_df.corr()
-    cor_out.drop(columns='idCSV',inplace=True)
-    cor_out.drop(columns='ID_ANO',inplace=True)                               ## here i dropping unwanted columns
-    cor_out.drop(columns='id',inplace=True)
+    #cor_out.drop(columns=['idCSV','ID_ANO','id','PAYS','SUJET','idCSVDescript'],inplace=True)         ## dropping unwanted columns
+    cor_out.drop(columns=['idCSV','ID_ANO','id','PAYS','SUJET','idCSVDescript','SITE_LON','SITE_LAT','ADR_LAT','ADR_LON','ENT_LAT','ENT_LON'],inplace=True)                                                      
     # print(cor_out.columns)
     new_df= pd.DataFrame(columns=['group','variable','value'])                  # new dataframe
     new_df.columns
@@ -241,11 +240,10 @@ def heatmap_ftr_slcor(df):                    # heatlap feature selector funcito
     
     while i_ind<length:                                                 ## to group all the variables according as shown in the "indu.csv", so as to be fead to heatmap
         #print(li[i_ind])
-
         for i in li:
             new_df.loc[k,'group']=li[i_ind]
             new_df.loc[k,'variable']=i
-            new_df.loc[k,'value']=cor_out.loc[i,li[i_ind]]*10          ##### since all the values are very very less, there aren't showing significant difference in heatmap
+            new_df.loc[k,'value']=cor_out.loc[i,li[i_ind]]          ##### since all the values are very very less, there aren't showing significant difference in heatmap
             k=k+1                                                      ##### so just multiplied by 10 .... THIS HAS TO BE CHECKED
         i_ind=i_ind+1
     # print(new_df.head(3))
@@ -263,7 +261,7 @@ def map():
     for i in range(0,len(newTable_adr_lo)):
         folium.Marker([newTable_adr_lo.iloc[i]['LAT'],newTable_adr_lo.iloc[i]['LON']]).add_to(m)
     m.save("H:\\Documents\\gitnew\\AdeoProject\\DjangoWeb V1\\Interface\\templates\\map.html")
-    #m.save(os.path.join(BASE_DIR,"DjangoWeb V1\\Interface\\template\\map.html"))
+    #m.save(os.path.join(BASE_DIR,"DjangoWeb V1\\Interface\\template\\map.html"),index=False)
     return None
     
 def change(num):

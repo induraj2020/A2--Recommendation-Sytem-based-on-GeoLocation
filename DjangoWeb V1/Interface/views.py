@@ -40,7 +40,6 @@ def descriptiveStats(request):                         ## function to display ne
 
     df=df [df['idCSV']==version_filtered ]
 
-
     STUyear=return_distinct_year(df)
     # STUQtdPerYear=return_distinct_STUQtdPerYear(df)
     dataGraph=[1000,10,552,2,63,830,10,84,400]
