@@ -14,6 +14,7 @@ from django.http import HttpResponse
 from django.contrib.auth.decorators import user_passes_test
 from django.db.models import Max
 from django_pandas.io import read_frame
+import time
 
 # Create your views here.
 @login_required
@@ -204,30 +205,29 @@ def forecast_predict(request):
        version_filtered =  (int) (version_filtered)
     else:
         version_filtered=max_version
-    
+
+    df=mergedTables.pdobjects.filter(idCSV=version_filtered).to_dataframe()    
     df_weights=df_weights[ df_weights['idCSV']==version_filtered ]
     
     w0=df_weights.w0.item()
     w1=df_weights.w1.item()
     w2=df_weights.w2.item()
 
-    program =  (request.GET.get('program'))
-    campus =  (request.GET.get('campus'))
-    ville =  (request.GET.get('ville'))
+    program_selected =  (request.GET.get('program'))
+    campus_selected =  (request.GET.get('campus'))
+    ville_selected =  (request.GET.get('ville'))
 
     has_result=0
     enterprise_list=pd.DataFrame()
-    if program and campus and ville:
-        if (program!='Choose...') and (campus != 'Choose...') and (ville != 'Choose...'):
-            # XXXX - SOLVED THIS PROBLEM: PRG_ENT_df,Campus_ENT_df,ADR_ENT_df,Ent_nbIntern
-            # enterprise_list = predict_intership(program,campus,ville,PRG_ENT_df,Campus_ENT_df,ADR_ENT_df,Ent_nbIntern,w0,w1,w2)
-            data = [['AUBAY', 17, 31, 1], ['Osaka', 21, 19, 0], ['Total', 20, 11, 0]]   
-            enterprise_list = pd.DataFrame(data, columns = ['ENTERPRISE', 'nb_PRG', 'nb_Campus', 'nb_ADR' ]) 
-            print(enterprise_list)
+    if program_selected and campus_selected and ville_selected:
+        if (program_selected != 'Choose...') and (campus_selected != 'Choose...') and (ville_selected != 'Choose...'):            
+            start_time = time.time()
+            PRG_ENT_df, Campus_ENT_df, ADR_ENT_df, Ent_nbIntern = Regression_DF(df,version_filtered)
+            print("Reg_DF: --- %s seconds ---" % (time.time() - start_time))
+            enterprise_list = predict_intership(program_selected,campus_selected,ville_selected,PRG_ENT_df,Campus_ENT_df,ADR_ENT_df,Ent_nbIntern,w0,w1,w2)
+            print("Reg   : --- %s seconds ---" % (time.time() - start_time))
             has_result=1
-
-
-    df=mergedTables.pdobjects.filter(idCSV=version_filtered).to_dataframe()
+   
     df_new_prg = return_distinct_prg(df)
     df_new_campus = return_distinct_site(df)
     df_new_ville = return_distinct_ville(df)
@@ -238,7 +238,10 @@ def forecast_predict(request):
              'campus': df_new_campus,
              'ville': df_new_ville,
              'enterprise_list':enterprise_list.to_dict('split'),
-             'has_result':has_result
+             'has_result':has_result,
+             'program_selected':program_selected,
+             'campus_selected':campus_selected,
+             'ville_selected':ville_selected
             }
     return render(request, 'forecast_predict.html', context)
 
@@ -256,7 +259,7 @@ def forecast_predict_update(request):
             df=mergedTables.pdobjects.filter(idCSV=version).to_dataframe()
             if len(df.idCSV)>1:
                 print(len(df.idCSV))
-                w0, w1, w2 = Regression(df)
+                w0, w1, w2 = Regression(df, version)
                 #Write table
                 table.create(
                     w0           =w0,
@@ -469,5 +472,5 @@ def search_result(request):
 
 def mapindu(request):
     #return HttpResponse('<h1> hiiiii </h1>')
-    map()
+    map2()
     return render(request, 'map.html', {'title': 'maps'})

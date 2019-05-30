@@ -250,7 +250,7 @@ def heatmap_ftr_slcor(df):                    # heatlap feature selector funcito
     new_df.to_csv( os.path.join(BASE_DIR, 'DjangoWeb V1\Interface\static\indu.csv') ,index=False)
     return  None
 
-def map():
+def map2():
     adr_lo=ADR_LOCATION.objects.all() 
     qs_adr_lo= adr_lo
     df_of_query_result_adr_lo= read_frame(qs_adr_lo)
