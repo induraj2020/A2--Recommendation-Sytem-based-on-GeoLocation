@@ -258,7 +258,7 @@ def map2():
     qs_adr= adr
     df_of_query_result_adr= read_frame(qs_adr)
     newTable_adr=df_of_query_result_adr
-    m= folium.Map(location=[48.8566,2.3522],tiles = "Stamen Toner",zoom_start=3)
+    m= folium.Map(location=[48.8566,2.3522],tiles = "Stamen Toner",zoom_start=2)
     #cergy=['49.034955','2.069925']
     #pau=['43.319568','-0.360571']
     newTable_ent_adr= newTable_adr[['ENT_LAT','ENT_LON']]
