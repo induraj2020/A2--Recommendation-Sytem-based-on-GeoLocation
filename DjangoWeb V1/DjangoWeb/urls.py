@@ -1,7 +1,6 @@
 """
 Definition of urls for DjangoWeb.
 """
-
 from datetime import datetime
 from django.urls import re_path, include, path
 from django.conf.urls import url
@@ -10,9 +9,7 @@ from django.contrib.auth.views import LoginView, LogoutView
 #from app import forms, views
 from dataCRUD.views import PRG_STUDENT_SITE_View
 from Interface import views
-
 from UploadingFile.views import uploadCSV
-
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -24,16 +21,18 @@ from Interface import views
 from UploadingFile.views import uploadCSV
 from django.conf import settings
 from django.conf.urls.static import static
-######
+###### indu 29-05-19
+from dataCRUD.models import mergedTables
+
 
 
 urlpatterns = [
     
     # url(r'^admin/', include(admin.site.urls)),
     path('admin/', admin.site.urls),
-
     path('Interface/checking', views.checking, name='checking'),
-
+    path('Interface/mapindu', views.mapindu, name='mapindu'),
+    #path('Interface/map',views.map,name='map'),
     path('Interface/', views.home, name='home'),
     path('Interface/descriptiveStats', views.descriptiveStats, name='descriptiveStats'),
     path('Interface/filter_chart',views.filter_chart, name='filter_chart'),
