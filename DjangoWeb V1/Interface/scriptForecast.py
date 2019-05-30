@@ -31,12 +31,10 @@ def predict_intership(PRG,Campus,ADR,PRG_ENT_df,Campus_ENT_df,ADR_ENT_df,Ent_nbI
     
     return df_result
 
-def Regression(df):
+def Regression_DF(df):
     #We consider only the enterprises with more than 5 interns
     Ent_nbIntern=df["ENTREPRISE"].value_counts()
     Ent_nbIntern=Ent_nbIntern[Ent_nbIntern>5]
-    M=len(Ent_nbIntern)
-    Series_Ent=pd.Series(Ent_nbIntern.index)
 
     PRG_ENT={}
     for prg in df["PRG"].unique():
@@ -44,20 +42,29 @@ def Regression(df):
         for ent in Ent_nbIntern.index:
             PRG_ENT[prg].append(len(df[(df["PRG"]==prg) & (df["ENTREPRISE"]==ent)]))
     PRG_ENT_df=pd.DataFrame(PRG_ENT)
-
+    
     Campus_ENT={}
     for cam in df["SITE"].unique():
         Campus_ENT[cam]=[]
         for ent in Ent_nbIntern.index:
             Campus_ENT[cam].append(len(df[(df["SITE"]==cam) & (df["ENTREPRISE"]==ent)]))  
     Campus_ENT_df=pd.DataFrame(Campus_ENT)
-    
+
     ADR_ENT={}
     for adr in df["ADR_VILLE"].unique():
         ADR_ENT[adr]=[]
         for ent in Ent_nbIntern.index:
             ADR_ENT[adr].append(len(df[(df["ADR_VILLE"]==adr) & (df["ENTREPRISE"]==ent)]))
     ADR_ENT_df=pd.DataFrame(ADR_ENT)
+
+    return PRG_ENT_df, Campus_ENT_df, ADR_ENT_df, Ent_nbIntern
+
+def Regression(df):
+    
+    PRG_ENT_df, Campus_ENT_df, ADR_ENT_df, Ent_nbIntern = Regression_DF(df)
+  
+    M=len(Ent_nbIntern)
+    Series_Ent=pd.Series(Ent_nbIntern.index)
     
     w0,w1,w2 = np.random.rand(3)
 
@@ -99,7 +106,7 @@ def Regression(df):
 
 def GradientDescent(X,y,w0,w1,w2,M):
     learning_rate=0.05
-    for i in range(30):
+    for i in range(10):
         w0 = w0 - learning_rate*differncial_w0(X,y,w0,w1,w2,M)
         w1 = w1 - learning_rate*differncial_w1(X,y,w0,w1,w2,M)
         w2 = w2 - learning_rate*differncial_w2(X,y,w0,w1,w2,M)
