@@ -300,8 +300,13 @@ def forecast_enterprise(request):
     num_entrep2016=len(df2016['ID_ANO'].unique())
     mean_sal=mean_sal1(df)
 
-    enterpYear= ['2010','2011','2012','2014', '2015']
-    enterpQTD=['400', '550', '650', '700', '300' ]
+    #bigEnterp=bigEnterp1(df)
+    #print(bigEnterp)
+    
+    
+    enterpYear= [2010,2011,2012,2014, 2015]
+    enterpQTD1=[400, 550, 650, 700, 300 ]
+    enterpQTD2=[0, 250, 950, 400, 100 ]
 
     context={
             'list_versions':list_versions,
@@ -312,7 +317,8 @@ def forecast_enterprise(request):
             'mean_sal':mean_sal,
             
             'enterpYear':enterpYear,
-            'enterpQTD':enterpQTD
+            'enterpQTD1':enterpQTD1,
+            'enterpQTD2':enterpQTD2
             }
     return render(request, 'forecast_enterprise.html', context)
 

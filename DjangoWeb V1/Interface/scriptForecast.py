@@ -4,6 +4,7 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn import preprocessing
 from sklearn.preprocessing import LabelEncoder
 from math import radians, cos, sin, asin, sqrt
+from sklearn.linear_model import LinearRegression
 
 import os
 import posixpath
@@ -157,3 +158,27 @@ def differncial_w2(X,y,w0,w1,w2,M):
         for j in range(M):
             d2=d2+(w0*X[i].iloc[j,0]+w1*X[i].iloc[j,1]+w2*X[i].iloc[j,2]-y[i][j])*X[i].iloc[j,2]/M
     return d2/len(X)
+
+def bigEnterp1(df):
+    bigs=df.groupby(['ENTREPRISE']).size().nlargest(3)
+    label=bigs.index.values
+
+    z=df.groupby('YEAR').size()
+    years= z.index
+
+    model = LinearRegression()
+    qtd=[]
+    qtdModel=[]
+    for p in label:
+        z=df[ (df['ENTREPRISE']==p) ].groupby('YEAR').size()
+        X=pd.DataFrame(z.index)
+        y=pd.DataFrame(z[:].values)
+        model.fit(X, y)
+        yLinear=model.predict(X)
+        qtd.append(y)
+        qtdModel.append(yLinear)
+    
+    print(label)
+    print(qtd)
+    print(qtdModel)
+    return years, label, qtd, qtdModel
