@@ -10,12 +10,13 @@
             <div class="col-md-12">
                 <nav>
                     <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
-                        <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Project Tab 1</a>
-                        <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">Project Tab 2</a>
-                        <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-contact" role="tab" aria-controls="nav-contact" aria-selected="false">Project Tab 3</a>
+                        <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Program Student Site</a>
+                        <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">Student Address</a>
+                        <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-contact" role="tab" aria-controls="nav-contact" aria-selected="false">Student Internship</a>
                     </div>
                 </nav>
                 <div class="tab-content" id="nav-tabContent">
+                     {% if PRG_STUDENT_SITE_list %}
                     <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
                         <table class="table" cellspacing="0">
                             <thead>
@@ -27,7 +28,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for item in PRG_STUDENT_SITEs %}
+                                {% for item in PRG_STUDENT_SITE_list %}
                                 <tr>
                                     <td>{{ item.ID_ANO }}</td>
                                     <td>{{ item.PRG }}</td>
@@ -39,78 +40,115 @@
                         </table>
                         <div>
                             <span class="step-links">
-                                {% if PRG_STUDENT_SITEs.has_previous %}
-                                <a href="?page=1">&laquo; first</a>
-                                <a href="?page={{ PRG_STUDENT_SITEs.previous_page_number }}">previous</a>
+                                {% if PRG_STUDENT_SITE_list.has_previous %}
+                                <a href="?pagePRG=1">&laquo; first</a>
+                                <a href="?pagePRG={{ PRG_STUDENT_SITE_list.previous_page_number }}">previous</a>
                                 {% endif %}
 
                                 <span class="current">
-                                    Page {{ PRG_STUDENT_SITEs.number }} of {{ PRG_STUDENT_SITEs.paginator.num_pages }}.
+                                    Page {{ PRG_STUDENT_SITE_list.number }} of {{ PRG_STUDENT_SITE_list.paginator.num_pages }}.
                                 </span>
 
-                                {% if PRG_STUDENT_SITEs.has_next %}
-                                <a href="?page={{ PRG_STUDENT_SITEs.next_page_number }}">next</a>
-                                <a href="?page={{ PRG_STUDENT_SITEs.paginator.num_pages }}">last &raquo;</a>
+                                {% if PRG_STUDENT_SITE_list.has_next %}
+                                <a href="?pagePRG={{ PRG_STUDENT_SITE_list.next_page_number }}">next</a>
+                                <a href="?pagePRG={{ PRG_STUDENT_SITE_list.paginator.num_pages }}">last &raquo;</a>
+                                {% endif %}
+                            </span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% if STUDENT_INTERNSHIP_list %}
+                    <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+                        <table class="table" cellspacing="0">
+                             <thead>
+                                <tr>
+                                    <th>ADR_CP</th>
+                                    <th>ADR_VILLE</th>
+                                    <th>ADR_PAYS</th>
+                                    <th>ID_ANO</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in ADR_STUDENTS_list %}
+                                <tr>
+                                    <td>{{ item.ADR_CP }}</td>
+                                    <td>{{ item.ADR_VILLE }}</td>
+                                    <td>{{ item.ADR_PAYS }}</td>
+                                    <td>{{ item.ID_ANO }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        <div>
+                            <span class="step-links">
+                                {% if ADR_STUDENTS_list.has_previous %}
+                                <a href="?pageADR=1">&laquo; first</a>
+                                <a href="?pageADR={{ ADR_STUDENTS_list.previous_page_number }}">previous</a>
+                                {% endif %}
+
+                                <span class="current">
+                                    Page {{ ADR_STUDENTS_list.number }} of {{ ADR_STUDENTS_list.paginator.num_pages }}.
+                                </span>
+
+                                {% if ADR_STUDENTSs.has_next %}
+                                <a href="?pageADR={{ ADR_STUDENTS_list.next_page_number }}">next</a>
+                                <a href="?pageADR={{ ADR_STUDENTS_list.paginator.num_pages }}">last &raquo;</a>
                                 {% endif %}
                             </span>
                         </div>
                     </div>
-                    <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
-                        <table class="table" cellspacing="0">
-                            <thead>
-                                <tr>
-                                    <th>Project Name</th>
-                                    <th>Employer</th>
-                                    <th>Time</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><a href="#">Work 1</a></td>
-                                    <td>Doe</td>
-                                    <td>john@example.com</td>
-                                </tr>
-                                <tr>
-                                    <td><a href="#">Work 2</a></td>
-                                    <td>Moe</td>
-                                    <td>mary@example.com</td>
-                                </tr>
-                                <tr>
-                                    <td><a href="#">Work 3</a></td>
-                                    <td>Dooley</td>
-                                    <td>july@example.com</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                     {% endif %}
+                     {% if ADR_STUDENTS_list %}
                     <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
-                        <table class="table" cellspacing="0">
-                            <thead>
+                         <table class="table" cellspacing="0">
+                             <thead>
                                 <tr>
-                                    <th>Contest Name</th>
-                                    <th>Date</th>
-                                    <th>Award Position</th>
+                                    <th>ANNEE</th>
+                                    <th>ANNEE_SCOLAIRE</th>
+                                    <th>ENTREPRISE</th>
+                                    <th>CODE_POSTAL</th>
+                                    <th>VILLE</th>
+                                    <th>PAYS</th>
+                                    <th>SUJET</th>
+                                    <th>RMUNERATION</th>
+                                    <th>ID_ANO</th>
                                 </tr>
                             </thead>
                             <tbody>
+                                {% for item in STUDENT_INTERNSHIP_list %}
                                 <tr>
-                                    <td><a href="#">Work 1</a></td>
-                                    <td>Doe</td>
-                                    <td>john@example.com</td>
+                                    <td>{{ item.ANNEE }}</td>
+                                    <td>{{ item.ANNEE_SCOLAIRE }}</td>
+                                    <td>{{ item.ENTREPRISE }}</td>
+                                    <td>{{ item.CODE_POSTAL }}</td>
+                                    <td>{{ item.VILLE }}</td>
+                                    <td>{{ item.PAYS }}</td>
+                                    <td>{{ item.SUJET }}</td>
+                                    <td>{{ item.RMUNERATION }}</td>
+                                    <td>{{ item.ID_ANO }}</td>
                                 </tr>
-                                <tr>
-                                    <td><a href="#">Work 2</a></td>
-                                    <td>Moe</td>
-                                    <td>mary@example.com</td>
-                                </tr>
-                                <tr>
-                                    <td><a href="#">Work 3</a></td>
-                                    <td>Dooley</td>
-                                    <td>july@example.com</td>
-                                </tr>
+                                {% endfor %}
                             </tbody>
                         </table>
+                        <div>
+                            <span class="step-links">
+                                {% if STUDENT_INTERNSHIP_list.has_previous %}
+                                <a href="?pageSTU=1">&laquo; first</a>
+                                <a href="?pageSTU={{ STUDENT_INTERNSHIP_list.previous_page_number }}">previous</a>
+                                {% endif %}
+
+                                <span class="current">
+                                    Page {{ STUDENT_INTERNSHIP_list.number }} of {{ STUDENT_INTERNSHIP_list.paginator.num_pages }}.
+                                </span>
+
+                                {% if ADR_STUDENTSs.has_next %}
+                                <a href="?pageSTU={{ STUDENT_INTERNSHIP_list.next_page_number }}">next</a>
+                                <a href="?pageSTU={{ STUDENT_INTERNSHIP_list.paginator.num_pages }}">last &raquo;</a>
+                                {% endif %}
+                            </span>
+                        </div>
                     </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
