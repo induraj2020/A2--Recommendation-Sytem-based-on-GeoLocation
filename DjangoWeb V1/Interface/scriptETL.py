@@ -330,6 +330,7 @@ def num_entre1(df):
 def mean_sal1(df):
     df['REMUNERATION'] = pd.to_numeric(df['REMUNERATION'], errors='coerce')
     meansal = df['REMUNERATION'].mean()
+    
     # print(meansal)
     meansal = "€ {:,.2f}".format(meansal)
     return(meansal)
