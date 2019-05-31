@@ -32,7 +32,6 @@ def descriptiveStats(request):                         ## function to display ne
     #Take the last version
     df_list_versions=return_distinct_version(df)
     max_version=max(df_list_versions)
-    
     version_filtered =  (request.GET.get('version'))
     if version_filtered:
        version_filtered =  (int) (version_filtered)
@@ -43,7 +42,12 @@ def descriptiveStats(request):                         ## function to display ne
 
     STUyear=return_distinct_year(df)
     # STUQtdPerYear=return_distinct_STUQtdPerYear(df)
-    dataGraph=[1000,10,552,2,63,830,10,84,400]
+    #dataGraph=[2000,10,552,2,63,830,10,84,400]
+    dataGraph=[]
+    for year in STUyear:
+        no_of_stu=len(df[df.loc[:,'ANNEE_SCOLAIRE'].str[:4]==year])
+        dataGraph.append(no_of_stu)
+
     heat_value=heatmap_ftr_slcor(df)
 
     num_records=num_records1(df)
@@ -55,7 +59,8 @@ def descriptiveStats(request):                         ## function to display ne
     c_cergy, c_pau, c_le =count_std(df,'PRG')
     s_cergy, s_pau, s_le =salary_avg(df, 'PRG')
     top, label = topx(df,'ENTREPRISE')
-
+    print('hiiiiiiiii')
+    print(c_cergy)
     context={
              'LIST_VERSIONS': df_list_versions,
              'SELECTED_VERSION':version_filtered,
@@ -170,17 +175,17 @@ def etl_mergetablesRF(request):
     
     ADR1,PRG1,STU1=UpdateMissingValues(ADR,PRG,STU,LOC )
     df=mergeTables(ADR1,PRG1,STU1)
-    print(df.ID_ANO.count())
+    #print(df.ID_ANO.count())
     df=df.drop_duplicates()
-    print(df.ID_ANO.count())
+    #print(df.ID_ANO.count())
 
     df=CatchLocation(df, df_location)
     df.drop_duplicates()
     df=UpdateDistance(df)
     df.drop_duplicates()
 
-    print(df.ID_ANO.count())
-    print(df.head())
+    #print(df.ID_ANO.count())
+    #print(df.head())
 
     numberlines = df.ID_ANO.count()
     table = mergedTables.objects
@@ -223,9 +228,9 @@ def forecast_predict(request):
         if (program_selected != 'Choose...') and (campus_selected != 'Choose...') and (ville_selected != 'Choose...'):            
             start_time = time.time()
             PRG_ENT_df, Campus_ENT_df, ADR_ENT_df, Ent_nbIntern = Regression_DF(df,version_filtered)
-            print("Reg_DF: --- %s seconds ---" % (time.time() - start_time))
+            #print("Reg_DF: --- %s seconds ---" % (time.time() - start_time))
             enterprise_list = predict_intership(program_selected,campus_selected,ville_selected,PRG_ENT_df,Campus_ENT_df,ADR_ENT_df,Ent_nbIntern,w0,w1,w2)
-            print("Reg   : --- %s seconds ---" % (time.time() - start_time))
+            #print("Reg   : --- %s seconds ---" % (time.time() - start_time))
             has_result=1
    
     df_new_prg = return_distinct_prg(df)
@@ -258,7 +263,7 @@ def forecast_predict_update(request):
         for version in range(df_weightsLastVersion+1, mergedTableLastVersion+1):
             df=mergedTables.pdobjects.filter(idCSV=version).to_dataframe()
             if len(df.idCSV)>1:
-                print(len(df.idCSV))
+                #print(len(df.idCSV))
                 w0, w1, w2 = Regression(df, version)
                 #Write table
                 table.create(
@@ -368,16 +373,33 @@ def checking(request):                                ## function related to fil
     #context = {'query_results': query_results}
     query_results=mergedTables.objects.all()                        # gets all objects of the mergedTables
 
+    df=mergedTables.pdobjects.all().to_dataframe()
+    #Take the last version
+    df_list_versions=return_distinct_version(df)
+    max_version=max(df_list_versions)
+    version_filtered =  (request.GET.get('version'))
+    if version_filtered:
+       version_filtered =  (int) (version_filtered)
+    else:
+        version_filtered=max_version
+
+    df=df [df['idCSV']==version_filtered ]
+
+   
+
     ### below 5 variables gets the unique fields from each of their mentioned fields
-    df_new_prg = return_distinct_prg(mergedTables.pdobjects.all().to_dataframe())
-    df_new_ville = return_distinct_ville(mergedTables.pdobjects.all().to_dataframe())
-    df_new_cp = return_distinct_cp(mergedTables.pdobjects.all().to_dataframe())
-    df_new_rem = return_distinct_rem(mergedTables.pdobjects.all().to_dataframe())
-    df_new_year= return_distinct_year(mergedTables.pdobjects.all().to_dataframe())
+    df_new_prg = return_distinct_prg(df)
+    df_new_ville = return_distinct_ville(df)
+    df_new_cp = return_distinct_cp(df)
+    df_new_rem = return_distinct_rem(df)
+    df_new_year= return_distinct_year(df)
     qs= query_results                       ## first when the page loads, all these are sent to the html and are rendered
 
 
-    context = {'prg': df_new_prg,
+    context = {
+                'LIST_VERSIONS': df_list_versions,
+                'SELECTED_VERSION':version_filtered,
+                'prg': df_new_prg,
                'ville': df_new_ville,
                'cp': df_new_cp,
                'rem': df_new_rem,
@@ -394,7 +416,7 @@ def checking(request):                                ## function related to fil
 @login_required
 def filter_chart(request):                           ## function to change the chart dynamically with respect to selected filters
     query_results=mergedTables.objects.all() 
-    qs= query_results
+    qs= query_results.filter()
 
     ## this below code works only if the form is sending somedata via Get method..i.e if the user presses search button
 
@@ -444,21 +466,59 @@ def filter_chart(request):                           ## function to change the c
 
     pd_df_of_query_result= read_frame(qs)                  ## to convert the query to dataframe objects... This Queried results are from the filter menu
     #pd_df_of_query_result= pd.DataFrame(list(qs))
-    newTable=pd_df_of_query_result
+    df=pd_df_of_query_result
     
-    qs=newTable.count()
-    numSTU=len(newTable['ID_ANO'].unique())               ## the distinct doesnt work so do the count,so used len() and unique()
-    numENT=len(newTable['ENTREPRISE'].unique())
-    STUyear=return_distinct_year(newTable)                ## this funciton is return in the scriptETL.py
-    dataGraph=[1000,10,552,2,63,830,10,84,400]
+    # qs=newTable.count()
+    # numSTU=len(newTable['ID_ANO'].unique())               ## the distinct doesnt work so do the count,so used len() and unique()
+    # numENT=len(newTable['ENTREPRISE'].unique())
+    # STUyear=return_distinct_year(newTable)                ## this funciton is return in the scriptETL.py
+    # dataGraph=[1000,10,552,2,63,830,10,84,400]
+
+    # context={
+    #          'query_results':query_results,
+    #          'NUMBERSTU':numSTU,
+    #          'NUMENT':numENT,
+    #          'STUyear':STUyear, 
+    #          'DATAGRAPH':dataGraph
+    #         }
+    STUyear=return_distinct_year(df)
+    # STUQtdPerYear=return_distinct_STUQtdPerYear(df)
+    #dataGraph=[1000,10,552,2,63,830,10,84,400]
+   # heat_value=heatmap_ftr_slcor(df)
+    dataGraph=[]
+    for year in STUyear:
+        no_of_stu=len(df[df.loc[:,'ANNEE_SCOLAIRE'].str[:4]==year])
+        dataGraph.append(no_of_stu)
+    #print(dataGraph)
+    num_records=num_records1(df)
+    num_std=num_std1(df)
+    num_entre=num_entre1(df)
+    mean_sal=mean_sal1(df)
+
+    d_stddist,l_site = stddist(df, 'SITE')
+    c_cergy, c_pau, c_le =count_std(df,'PRG')
+    s_cergy, s_pau, s_le =salary_avg(df, 'PRG')
+    top, label = topx(df,'ENTREPRISE')
 
     context={
-             'query_results':query_results,
-             'NUMBERSTU':numSTU,
-             'NUMENT':numENT,
              'STUyear':STUyear, 
-             'DATAGRAPH':dataGraph
-            }
+             'DATAGRAPH':dataGraph,
+             #'heat_value':heat_value,
+             'mean_sal':mean_sal,
+             'num_records':num_records,
+             'num_std':num_std,
+             'num_entre':num_entre,
+             'D_stddist':d_stddist,
+             'L_stddist':list(l_site),
+             'L_count':list(c_le),
+             'D_cergyc':list(c_cergy),
+             'D_pauc':list(c_pau),
+             'L_sal': list(s_le),
+             'D_cergys': list(c_cergy),
+             'D_paus': list(c_pau),
+             'D_top' :top,
+             'D_label':label.tolist(),
+                }
 
   
     return render(request,'descriptivestats3.html',context)     # descriptivestats3 is a new html for displaying the altered graphs based on query results
@@ -488,7 +548,7 @@ def search_result(request):
         qs=qs.filter(ENTREPRISE=searched)
     elif(qs.filter(REMUNERATION=searched)):                              ### But for some reason remuneration based filtering is not working while all others work
         qs=qs.filter(REMUNERATION=searched)
-    print(qs)
+    #print(qs)
     
     df=read_frame(qs)
 

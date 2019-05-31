@@ -26,20 +26,24 @@ def showMissingValues(df):
 
 # 17-may-19
 def return_distinct_prg(df):
-    df_prg_uniq=df['PRG'].unique().tolist()     ## later try sorting alphabetically
+    df_prg_uniq=df['PRG'].unique()     ## later try sorting alphabetically
+    df_prg_uniq.sort()
     return(df_prg_uniq)
 
 def return_distinct_ville(df):
-    df_ville_uniq = df['VILLE'].unique().tolist()
+    df_ville_uniq = df['VILLE'].unique()
+    df_ville_uniq.sort()
     return(df_ville_uniq)
 
 def return_distinct_enterp(df):
-    df_enterp_uniq = df['ENTREPRISE'].unique().tolist()
+    df_enterp_uniq = df['ENTREPRISE'].unique()
+    df_enterp_uniq.sort()
     return(df_enterp_uniq)
 
 def return_distinct_site(df):
-    df_uniq = df['SITE'].unique().tolist()
-    return(df_uniq)
+    df_uniq_site = df['SITE'].unique()
+    df_uniq_site.sort()
+    return(df_uniq_site)
 
 def return_distinct_cp(df):
     df_cp_uniq = df['CODE_POSTAL'].unique().tolist()
@@ -50,11 +54,13 @@ def return_distinct_rem(df):
     return (df_Rem_uniq)
 
 def return_distinct_year(df):
-    df_year_uniq = df['ANNEE_SCOLAIRE'].str[:4].unique().tolist()
+    df_year_uniq = df['ANNEE_SCOLAIRE'].str[:4].unique()
+    df_year_uniq.sort()
     return (df_year_uniq)
 
 def return_distinct_version(df):
-    df_uniq=df['idCSV'].unique().tolist()     
+    df_uniq=df['idCSV'].unique()
+    df_uniq.sort()     
     return(df_uniq)
 
 def redefineDFTypes(df):
