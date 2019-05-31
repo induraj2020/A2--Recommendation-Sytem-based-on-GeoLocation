@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     #Components
     'dataCRUD',
     'UploadingFile',
+
     
 ]
 

@@ -33,7 +33,7 @@
           <div class="form-group col-md-4">
                 <label for="inputState">Program:</label>
                 <select id="inputState" class="form-control" name="program">
-                  <option selected>Choose...</option>
+                  <option selected>{{program_selected}}</option>
                     {% for item in prg %}
                       <option>{{ item }}</option>
                     {% endfor %}
@@ -43,7 +43,7 @@
         <div class="form-group col-md-4">
           <label for="inputState">Campus:</label>
           <select id="inputState" class="form-control" name="campus">
-            <option selected>Choose...</option>
+            <option selected>{{campus_selected}}</option>
             {% for item in campus %}
                 <option>{{ item }}</option>
               {% endfor %}
@@ -53,7 +53,7 @@
         <div class="form-group col-md-4">
           <label for="inputState">Ville:</label>
           <select id="inputState" class="form-control" name="ville">
-            <option selected>Choose...</option>
+            <option selected>{{ville_selected}}</option>
             {% for item in ville %}
                 <option>{{ item }}</option>
               {% endfor %}

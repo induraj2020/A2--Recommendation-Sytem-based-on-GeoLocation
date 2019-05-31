@@ -1,15 +1,13 @@
 {% extends "base.html" %}
 {% load static %} 
-{% static "indu.csv" %}
-<!--https://stackoverflow.com/questions/54960091/loading-a-csv-file-in-d3-js-inside-django-is-not-working -->
+
+
 <script>
 {% block jquery %}
 $.ajax({
     success: function(data) {
         setchart()
-        piechart()
         setchart2()
-        hochart()
     },
     error: function(error_data){
         console.log("error")
@@ -46,14 +44,10 @@ function setchart() {
     var myChart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels:[ 
-                {% for year in STUyear %}
-                  {{ year }},
-                {% endfor %}                  
-                  ] ,
+                labels:{{ enterpYear }} ,
                 datasets: [{
                     label: '# of students',
-                    data: {{ DATAGRAPH }},
+                    data: {{ enterpQTD }},
             backgroundColor: prgcolorset ,
             borderColor: prgcolorborderset,
             borderWidth: 1
@@ -81,42 +75,9 @@ function setchart() {
             mode: 'x'
         }
     }
-});
+  });
+}
 
-}
-function piechart() {
-    var ctx = document.getElementById('piechart').getContext('2d');
-    var pieChart = new Chart(ctx, {
-    type: 'doughnut',
-    data:{
-        labels: ['Cergy','Pau'],
-        datasets: [{
-                    label: '% of students',
-                    data: {{ D_stddist }},
-            backgroundColor: ['#ffee58','#ffa726'],
-            borderColor: '#33691e',
-            borderWidth: 3,
-        }]
-    },
-    options: {
-        title: {
-            display: false,
-            text: 'Students in Campus'
-        },
-        legend:{
-            display:true,
-            position:'bottom',
-        },
-    },
-    plugins:{
-        labels: {
-            render: 'percentage',
-            fontColor: ['green', 'white'],
-            precision: 2
-            }
-    }
-});
-}
 function setchart2() {
     var ctx = document.getElementById('myChart2').getContext('2d');
     ctx.shadowBlur=20;
@@ -168,43 +129,6 @@ function setchart2() {
 });
 }
 
-function hochart() {
-    var ctx = document.getElementById('hochart').getContext('2d');
-    var hochart = new Chart(ctx, {
-    type: 'horizontalBar',
-    data: {
-      labels:['TOTAL - PAU', 'CGI - COURBEVOIE', 'AUBAY', 'NOVOSIBIRSK STATE UNIVERSITY', "VAL'EISTI", 'OSAKA PREFECTURE UNIVERSITY', 'DASSAULT SYSTEMES', 'SOCIETE GENERALE', 'SOPRA GROUP - LA DEFENSE', 'TALAN SOLUTIONS'],
-      datasets: [
-        {
-          label: "Amount of record(s)",
-          backgroundColor: ["rgba(13, 71, 161,0.3)", "rgba(1, 87, 155,0.3)","rgba(0, 96, 100,0.3)","rgba(0, 77, 64,0.3)","rgba(27, 94, 32,0.6)","rgba(51, 105, 30,0.6)","rgba(130, 119, 23,0.6)","rgba(245, 127, 23,0.6)","rgba(249, 168, 37,0.6)","rgba(251, 192, 45,0.6)","rgba(253, 216, 53,0.6)"],
-          data: {{ D_top }}
-        }
-      ]
-    },
-    options: {
-      legend: { display: false },
-      title: {
-        display: true,
-        text: ''
-      },
-        plugins: {
-          labels: false
-      },
-      scales: {
-        yAxes: [{ticks: {
-                mirror: true,
-                fontColor: "#3e2723",
-                padding:"-10",
-                rotate:"40"
-            }}],
-
-    }
-    }
-});
-}
-
-
 {% endblock %}
 </script>
 
@@ -212,11 +136,26 @@ function hochart() {
 
 {% block content %}
 
-<!-- <div id="map-container-google-2" class="z-depth-1-half map-container" >
-  <iframe src="https://maps.google.com/maps?q=paris&t=&z=10&ie=UTF8&iwloc=&output=embed" frameborder="0"
-    style="border:0" allowfullscreen></iframe>
+<form method="GET" >
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+      <h1 class="h2">Enterprise Evolution</h1>
+      <div class="btn-toolbar mb-2 mb-md-0">
+        <label  for="inputState" class="mdb-main-label">RAW DATA Version: </label>
+        <select id="inputState" class="mdb-select md-form colorful-select dropdown-dark" name="version">
+          <option selected>{{ version_filtered }}</option>
+          {% for item in list_versions %}
+          <option>{{ item }}</option>
+          {% endfor %}
+        </select>
+        <div class="btn-group mr-2">
+          <!-- <button type="submit" class="btn btn-primary"> Apply </button> -->
+          <button type="submit" class="btn btn-sm btn-outline-primary">Apply</button>
+        </div>
+      </div>
 </div>
-<canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas> -->
+</form>
+
+
 
 <div class="row" >
           <div class="col-lg-3 col-md-5 col-sm-5 " >
@@ -230,7 +169,7 @@ function hochart() {
                     <div class="numbers">
                       <p class="card-category">Number of </p>
                       <p class="card-title" style="color:#0c2646;  font-size:20px ; font-weight: bold ">
-                        Records
+                        Enterprises
                     </div>
                   </div>
                 </div>
@@ -238,7 +177,7 @@ function hochart() {
               <div class="card-footer ">
                 <hr>
                 <div class="stats" style="color: #d39e00;" >
-                    {{ num_records }}
+                    {{ num_enterp }}
                 </div>
               </div>
             </div>
@@ -265,7 +204,7 @@ function hochart() {
               <div class="card-footer ">
                 <hr>
                 <div class="stats" style="color: #c82333;" >
-                  {{ num_std }}
+                  {{ num_stu }}
                 </div>
               </div>
             </div>
@@ -283,7 +222,7 @@ function hochart() {
                     <div class="numbers">
                       <p class="card-category">Number of </p>
                       <p class="card-title" style="color:#0c2646; font-size:20px ; font-weight: bold ">
-                            Enterprises
+                            Enterprises 2016
                         <p>
                     </div>
                   </div>
@@ -292,7 +231,7 @@ function hochart() {
               <div class="card-footer ">
                 <hr>
                 <div class="stats" style="color: #34ce57;">
-                  {{ num_entre }}
+                  {{ num_entrep2016 }}
                 </div>
               </div>
             </div>
@@ -326,56 +265,31 @@ function hochart() {
 
 </div>
 <div class="row">
-    <div class="col-lg-4  text-center" >
+    <div class="col-lg-6  text-center" >
             <div class="card-chart ">
               <div class="card-header ">
-                <h5 class="card-title">Students Distribution</h5>
-                <p class="card-category">In Campus</p>
+                <h5 class="card-title">Biggest Number Students</h5>
+                <p class="card-category">per Year</p>
               </div>
                <div class="inside-left">
-                    <canvas class="my-4 w-10" id="piechart" width="100%" height="70"></canvas>
+                    <canvas class="my-4 w-10" id="myChart" width="100%" height="70"></canvas>
                  </div>
               </div>
-            </div>
-
-
-    <div class="col-lg-8 " >
-        <div class="card-chart flex-column">
-              <div class="card-header ">
-                <h5 class="card-title">Salary and amount of students </h5>
-                 <p class="card-category">per departments</p>
-                <div class="inside">
-                    <canvas class="my-4 w-10" id="myChart2" width="100%" height="30"  ></canvas>
-                </div>
-              </div>
-        </div>
-        <div class="card-chart flex-column">
-              <div class="card-header ">
-                <h5 class="card-title">Students per year</h5>
-                  <p class="card-category">From 2014 til last year</p>
-                  <div class="inside">
-                    <canvas class="my-4 w-10" id="myChart" width="100%" height="25" ></canvas>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-8 " >
-          <div class="card-chart " >
-                <div class="card-header " >
-                  <h5 class="card-title text-center">Top 10 enterprises</h5>
-                    <p class="card-category text-center">amount of records work in the company</p>
-                    <div class="inside">
-                      <canvas class="my-4 w-10" id="hochart" width="100%" height="80" ></canvas>
-                  </div>
-                </div>
-          </div>
-      </div>
-
-        <div id="my_dataviz"></div>
-        <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
-
     </div>
-</div>
+    <div class="col-lg-6  text-center" >
+      <div class="card-chart ">
+        <div class="card-header ">
+          <h5 class="card-title">Most Growing Qtd Interships</h5>
+          <p class="card-category">per Year</p>
+        </div>
+         <div class="inside-left">
+              <canvas class="my-4 w-10" id="myChart2" width="100%" height="70"></canvas>
+           </div>
+        </div>
+    </div>  
+</div> 
+
+
 
  <!--   Core JS Files   -->
   <scripst src="../static/assets/js/core/jquery.min.js"></script>

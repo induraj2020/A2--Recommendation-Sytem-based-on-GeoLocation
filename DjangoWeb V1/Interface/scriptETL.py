@@ -6,10 +6,13 @@ from sklearn.preprocessing import LabelEncoder
 from math import radians, cos, sin, asin, sqrt
 from feature_selector import FeatureSelector
 import folium
+from folium import plugins
 from dataCRUD.models import *
 from django_pandas.io import read_frame
 import gmaps
 import gmaps.datasets
+from folium.plugins import HeatMap
+from folium.plugins import MarkerCluster
 
 import os
 import posixpath
@@ -23,20 +26,24 @@ def showMissingValues(df):
 
 # 17-may-19
 def return_distinct_prg(df):
-    df_prg_uniq=df['PRG'].unique().tolist()     ## later try sorting alphabetically
+    df_prg_uniq=df['PRG'].unique()     ## later try sorting alphabetically
+    df_prg_uniq.sort()
     return(df_prg_uniq)
 
 def return_distinct_ville(df):
-    df_ville_uniq = df['VILLE'].unique().tolist()
+    df_ville_uniq = df['VILLE'].unique()
+    df_ville_uniq.sort()
     return(df_ville_uniq)
 
 def return_distinct_enterp(df):
-    df_enterp_uniq = df['ENTREPRISE'].unique().tolist()
+    df_enterp_uniq = df['ENTREPRISE'].unique()
+    df_enterp_uniq.sort()
     return(df_enterp_uniq)
 
 def return_distinct_site(df):
-    df_uniq = df['SITE'].unique().tolist()
-    return(df_uniq)
+    df_uniq_site = df['SITE'].unique()
+    df_uniq_site.sort()
+    return(df_uniq_site)
 
 def return_distinct_cp(df):
     df_cp_uniq = df['CODE_POSTAL'].unique().tolist()
@@ -47,11 +54,13 @@ def return_distinct_rem(df):
     return (df_Rem_uniq)
 
 def return_distinct_year(df):
-    df_year_uniq = df['ANNEE_SCOLAIRE'].str[:4].unique().tolist()
+    df_year_uniq = df['ANNEE_SCOLAIRE'].str[:4].unique()
+    df_year_uniq.sort()
     return (df_year_uniq)
 
 def return_distinct_version(df):
-    df_uniq=df['idCSV'].unique().tolist()     
+    df_uniq=df['idCSV'].unique()
+    df_uniq.sort()     
     return(df_uniq)
 
 def redefineDFTypes(df):
@@ -225,9 +234,8 @@ def heatmap_ftr_slcor(df):                    # heatlap feature selector funcito
     
     fs = FeatureSelector(data = le_df, labels = df['REMUNERATION'])
     cor_out=le_df.corr()
-    cor_out.drop(columns='idCSV',inplace=True)
-    cor_out.drop(columns='ID_ANO',inplace=True)                               ## here i dropping unwanted columns
-    cor_out.drop(columns='id',inplace=True)
+    #cor_out.drop(columns=['idCSV','ID_ANO','id','PAYS','SUJET','idCSVDescript'],inplace=True)         ## dropping unwanted columns
+    cor_out.drop(columns=['idCSV','ID_ANO','id','PAYS','SUJET','idCSVDescript','SITE_LON','SITE_LAT','ADR_LAT','ADR_LON','ENT_LAT','ENT_LON'],inplace=True)                                                      
     # print(cor_out.columns)
     new_df= pd.DataFrame(columns=['group','variable','value'])                  # new dataframe
     new_df.columns
@@ -241,29 +249,54 @@ def heatmap_ftr_slcor(df):                    # heatlap feature selector funcito
     
     while i_ind<length:                                                 ## to group all the variables according as shown in the "indu.csv", so as to be fead to heatmap
         #print(li[i_ind])
-
         for i in li:
             new_df.loc[k,'group']=li[i_ind]
             new_df.loc[k,'variable']=i
-            new_df.loc[k,'value']=cor_out.loc[i,li[i_ind]]*10          ##### since all the values are very very less, there aren't showing significant difference in heatmap
+            new_df.loc[k,'value']=cor_out.loc[i,li[i_ind]]          ##### since all the values are very very less, there aren't showing significant difference in heatmap
             k=k+1                                                      ##### so just multiplied by 10 .... THIS HAS TO BE CHECKED
         i_ind=i_ind+1
     # print(new_df.head(3))
     new_df.to_csv( os.path.join(BASE_DIR, 'DjangoWeb V1\Interface\static\indu.csv') ,index=False)
     return  None
 
-def map():
-    adr_lo=ADR_LOCATION.objects.all() 
-    qs_adr_lo= adr_lo
-    df_of_query_result_adr_lo= read_frame(qs_adr_lo)
-    newTable_adr_lo=df_of_query_result_adr_lo
+def map2():
+    adr=mergedTables.objects.all() 
+    qs_adr= adr
+    df_of_query_result_adr= read_frame(qs_adr)
+    newTable_adr=df_of_query_result_adr
+    m= folium.Map(location=[48.8566,2.3522],tiles = "Stamen Toner",zoom_start=2)
+    #cergy=['49.034955','2.069925']
+    #pau=['43.319568','-0.360571']
+    newTable_ent_adr= newTable_adr[['ENT_LAT','ENT_LON']]
+    newTable_stu_adr= newTable_adr[['ADR_LAT','ADR_LON']]
+    newTable_site_adr= newTable_adr[['SITE_LAT','SITE_LON']]
+    newTable_ent_adr= newTable_ent_adr.dropna(axis=0, subset=['ENT_LAT','ENT_LON'])
+    newTable_stu_adr= newTable_stu_adr.dropna(axis=0, subset=['ADR_LAT','ADR_LON'])
+    newTable_site_adr= newTable_site_adr.dropna(axis=0, subset=['SITE_LAT','SITE_LON'])
+    #newTable_ent_adr= [[row['ENT_LAT'],row['ENT_LON']] for index,row in newTable_ent_adr.iterrows() ]
+    #newTable_stu_adr= [[row['ADR_LAT'],row['ADR_LON']] for index,row in newTable_stu_adr.iterrows() ]
+    #HeatMap(cergy).add_to(m)
+    HeatMap(newTable_stu_adr).add_to(m)
+    mc = MarkerCluster()
+    folium.CircleMarker([49.034955, 2.069925],
+                    radius=20,
+                    popup='Cergy Campus',
+                    color='red',
+                    ).add_to(m)
+    folium.CircleMarker([43.319568, -0.360571],
+                    radius=20,
+                    popup='Pau Campus',
+                    color='red',
+                    ).add_to(m)
 
-    newTable_adr_lo= newTable_adr_lo[['LAT','LON']]
-    m= folium.Map(location=[48.8566,2.3522],tiles = "Stamen Terrain",zoom_start=4)
-    for i in range(0,len(newTable_adr_lo)):
-        folium.Marker([newTable_adr_lo.iloc[i]['LAT'],newTable_adr_lo.iloc[i]['LON']]).add_to(m)
-    m.save("H:\\Documents\\gitnew\\AdeoProject\\DjangoWeb V1\\Interface\\templates\\map.html")
-    #m.save(os.path.join(BASE_DIR,"DjangoWeb V1\\Interface\\template\\map.html"))
+    for i in range(0,len(newTable_stu_adr)):
+        #mc.add_child(folium.Marker([newTable_ent_adr.iloc[i]['ENT_LAT'],newTable_ent_adr.iloc[i]['ENT_LON']],icon=folium.Icon(icon='cloud'))).add_to(m)
+        mc.add_child(folium.Marker([newTable_ent_adr.iloc[i]['ENT_LAT'],newTable_ent_adr.iloc[i]['ENT_LON']])).add_to(m)
+        #mc.add_child(folium.Marker([newTable_stu_adr.iloc[i]['ADR_LAT'],newTable_stu_adr.iloc[i]['ADR_LON']],icon=folium.Icon(color='red'))).add_to(m)
+        #folium.Marker([newTable_site_adr.iloc[i]['SITE_LAT'],newTable_site_adr.iloc[i]['SITE_LON']],icon=folium.Icon(icon='green')).add_to(m)
+        #m.add_children(plugins.HeatMap(newTable_adr_lo, radius=15))
+
+    m.save( os.path.join(BASE_DIR,'DjangoWeb V1\Interface\\templates\map.html') )
     return None
     
 def change(num):
@@ -295,6 +328,14 @@ def num_entre1(df):
 
 #mean of salary
 def mean_sal1(df):
+    df['REMUNERATION'] = pd.to_numeric(df['REMUNERATION'], errors='coerce')
+    meansal = df['REMUNERATION'].mean()
+    # print(meansal)
+    meansal = "€ {:,.2f}".format(meansal)
+    return(meansal)
+
+#mean of salary
+def mean_sal2(df):
     df['REMUNERATION'] = pd.to_numeric(df['REMUNERATION'], errors='coerce')
     meansal = df['REMUNERATION'].mean()
     # print(meansal)
