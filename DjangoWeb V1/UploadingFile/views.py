@@ -128,30 +128,77 @@ def handle_uploaded_file(f,table,separator):
     file_data = f.read().decode("utf-8")		
     lines = file_data.split("\n")
     #loop over the lines and save them in db. If error , store as string and then display
-    if separator=='comma':
-        for line in lines:
-            if line.strip():
-            #   line = line.strip().strip('\n')
-                line.strip('\n')
-                fields = line.split(",")
-                prg_student_site=PRG_STUDENT_SITE(ID_ANO=fields[0],PRG=fields[1],ANNE_SCOLAIRE=fields[2],SITE=fields[3])
-                try:
-                    prg_student_site.save()
-                except Exception as e:
-                    messages.error(request,"Unable to upload file. "+repr(e))   
-    if separator=='tab':
-        for line in lines:
-            if line.strip():
-            #   line = line.strip().strip('\n')
-                line.strip('\n')
-                fields=line.split('\t')
-                #fields =re.split(r'\t+', line.rstrip('\t')) 
-                #prg_student_site=eval(table)(ID_ANO=fields[0],PRG=fields[1],ANNE_SCOLAIRE=fields[2],SITE=fields[3])
-                prg_student_site=PRG_STUDENT_SITE(ID_ANO=fields[0],PRG=fields[1],ANNE_SCOLAIRE=fields[2],SITE=fields[3])
-                try:
-                    prg_student_site.save()
-                except Exception as e:
-                    messages.error(request,"Unable to upload file. "+repr(e))  
+    if table=="PRG_STUDENT_SITE":
+        if separator=='comma':
+            for line in lines:
+                if line.strip():
+                #   line = line.strip().strip('\n')
+                    line.strip('\n')
+                    fields = line.split(",")
+                    prg_student_site=PRG_STUDENT_SITE(ID_ANO=fields[0],PRG=fields[1],ANNE_SCOLAIRE=fields[2],SITE=fields[3])
+                    try:
+                        prg_student_site.save()
+                    except Exception as e:
+                        messages.error(request,"Unable to upload file. "+repr(e))   
+        elif separator=='tab':
+            for line in lines:
+                if line.strip():
+                #   line = line.strip().strip('\n')
+                    line.strip('\n')
+                    fields=line.split('\t')
+                    #fields =re.split(r'\t+', line.rstrip('\t')) 
+                    #prg_student_site=eval(table)(ID_ANO=fields[0],PRG=fields[1],ANNE_SCOLAIRE=fields[2],SITE=fields[3])
+                    prg_student_site=PRG_STUDENT_SITE(ID_ANO=fields[0],PRG=fields[1],ANNE_SCOLAIRE=fields[2],SITE=fields[3])
+                    try:
+                        prg_student_site.save()
+                    except Exception as e:
+                        messages.error(request,"Unable to upload file. "+repr(e))  
+    if table=="ADR_STUDENTS":
+            if separator=='comma':
+                for line in lines:
+                    if line.strip():
+                        line.strip('\n')
+                        fields = line.split(",")
+                        adr_students=ADR_STUDENTS(ADR_CP=fields[0],ADR_VILLE=fields[1],ADR_PAYS=fields[2],ID_ANO=fields[3])
+                        try:
+                            adr_students.save()
+                        except Exception as e:
+                            messages.error(request,"Unable to upload file. "+repr(e))   
+            elif separator=='tab':
+                for line in lines:
+                    if line.strip():
+                        line.strip('\n')
+                        fields=line.split('\t')
+                        adr_students=ADR_STUDENTS(ADR_CP=fields[0],ADR_VILLE=fields[1],ADR_PAYS=fields[2],ID_ANO=fields[3])
+                        try:
+                            adr_students.save()
+                        except Exception as e:
+                            messages.error(request,"Unable to upload file. "+repr(e)) 
+    if table=="STUDENT_INTERNSHIP":
+            if separator=='comma':
+                for line in lines:
+                    if line.strip():
+                        line.strip('\n')
+                        fields = line.split(",")
+                        student_intership=STUDENT_INTERNSHIP(ANNEE=fields[0],ANNEE_SCOLAIRE=fields[1],ENTERPRISE=fields[2],CODE_POSTAL=fields[3],
+                                                             VILLE=fields[4],PAYS=fields[5],SUJET=fields[6],REMUNERATION=fields[7],ID_ANO=fields[8])
+                        try:
+                            student_intership.save()
+                        except Exception as e:
+                            messages.error(request,"Unable to upload file. "+repr(e))   
+            elif separator=='tab':
+                for line in lines:
+                    if line.strip():
+                        line.strip('\n')
+                        fields=line.split('\t')
+                        student_intership=STUDENT_INTERNSHIP(ANNEE=fields[0],ANNEE_SCOLAIRE=fields[1],ENTERPRISE=fields[2],CODE_POSTAL=fields[3],
+                                                             VILLE=fields[4],PAYS=fields[5],SUJET=fields[6],REMUNERATION=fields[7],ID_ANO=fields[8])                        
+                        try:
+                            student_intership.save()
+                        except Exception as e:
+                            messages.error(request,"Unable to upload file. "+repr(e)) 
+
+
 def handle_csv_file(f,tablePicked):
     reader = csv.DictReader(codecs.iterdecode(f, 'latin-1'))
     #reader = csv.DictReader(codecs.iterdecode(f, 'utf-8'))
