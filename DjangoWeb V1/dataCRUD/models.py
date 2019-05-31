@@ -35,7 +35,7 @@ class STUDENT_INTERNSHIP(models.Model):
     VILLE           =models.CharField(max_length=120)
     PAYS            =models.CharField(max_length=120)
     SUJET           =models.CharField(max_length=120)
-    REMUNERATION    =models.FloatField()
+    REMUNERATION    =models.FloatField(null=True, blank=True, default=None)
     ID_ANO          =models.IntegerField()
     idCSV           =models.IntegerField(blank=True,null=True)
 
