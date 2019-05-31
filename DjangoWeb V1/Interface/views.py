@@ -3,8 +3,8 @@ import pandas as pd
 from django.shortcuts import render
 from django.shortcuts import HttpResponse
 from dataCRUD.models import *
-from .scriptETL import *
-from .scriptForecast import *
+from Interface.scriptETL import *
+from Interface.scriptForecast import *
 from django.contrib.auth.decorators import login_required
 from django.template.loader import get_template
 from .forms import ContactForm

@@ -49,8 +49,6 @@ INSTALLED_APPS = [
     #Components
     'dataCRUD',
     'UploadingFile',
-    'djgeojson',
-    'leaflet',
     
 ]
 
