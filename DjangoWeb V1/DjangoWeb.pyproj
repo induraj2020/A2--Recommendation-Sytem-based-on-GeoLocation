@@ -78,6 +78,7 @@
     <Compile Include="dataCRUD\__init__.py" />
     <Compile Include="UploadingFile\admin.py" />
     <Compile Include="UploadingFile\apps.py" />
+    <Compile Include="UploadingFile\forms.py" />
     <Compile Include="UploadingFile\migrations\__init__.py" />
     <Compile Include="UploadingFile\models.py" />
     <Compile Include="UploadingFile\tests.py" />
