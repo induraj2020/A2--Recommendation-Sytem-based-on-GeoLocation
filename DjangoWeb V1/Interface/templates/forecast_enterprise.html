@@ -1,0 +1,303 @@
+{% extends "base.html" %}
+{% load static %} 
+
+
+<script>
+{% block jquery %}
+$.ajax({
+    success: function(data) {
+        setchart()
+        setchart2()
+    },
+    error: function(error_data){
+        console.log("error")
+        console.log(error_data)
+    }
+})
+prgcolorset = [
+    'rgba(73,170,30,0.4)',
+    'rgba(50, 106, 21,0.4)',
+    'rgba(219, 58, 29,0.4)',
+    'rgba(150, 58, 29, 0.4)',
+    'rgba(60, 206, 209, 0.4)',
+    'rgba(60, 157, 209, 0.4)',
+    'rgba(60, 90, 209, 0.4)',
+    'rgba(280, 243, 36, 0.4)',
+    'rgba(230, 243, 36, 0.4)',
+]
+prgcolorborderset =[
+    'rgba(73,170,30,1)',
+    'rgba(50, 106, 21,1)',
+    'rgba(219, 58, 29, 1)',
+    'rgba(150, 58, 29, 1)',
+    'rgba(60, 206, 209, 1)',
+    'rgba(60, 157, 209, 1)',
+    'rgba(60, 90, 209, 1)',
+    'rgba(280, 243, 36, 1)',
+    'rgba(230,243, 36, 1)',
+
+]
+function setchart() {
+    var ctx = document.getElementById('myChart').getContext('2d');
+    ctx.shadowBlur=20;
+    ctx.shadowColor="black";
+    var myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels:{{ enterpYear }} ,
+                datasets: [{
+                    label: '# of students',
+                    data: {{ enterpQTD }},
+            backgroundColor: prgcolorset ,
+            borderColor: prgcolorborderset,
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        },
+
+        title: {
+            display: false,
+            text: 'Students per year'
+        },
+
+        legend: {
+            display: true,
+            position:'bottom',
+        },
+        tooltips: {
+            mode: 'x'
+        }
+    }
+  });
+}
+
+function setchart2() {
+    var ctx = document.getElementById('myChart2').getContext('2d');
+    ctx.shadowBlur=20;
+    ctx.shadowColor="black";
+    var myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['ADEO1', 'ADEO2' ,'CPI1' ,'CPI2', 'ING1' ,'ING2' ,'ING3' ,'MobM2' ,'QFRM1' ,'QFRM2'], <!--put the prg-->
+      datasets: [{
+          label: "Cergy(Amount of students)",
+          type: "line",
+          borderColor: '#26c6da',
+          data: {{ D_cergyc }},
+          fill: false
+        },
+          {
+          label: "Pau(Amount of students)",
+          type: "line",
+          borderColor: '#5c6bc0',
+          data: {{ D_pauc }},
+          fill: false
+        },
+          {
+          label: "Cergy(Mean salary)",
+          type: "bar",
+          backgroundColor: '#ffe082',
+          data: {{ D_cergys }},
+        }, {
+          label: "Pau(Mean salary)",
+          type: "bar",
+          backgroundColor: '#bf360c',
+          backgroundColorHover: '#ffab91',
+          data:{{ D_paus }},
+        }
+
+      ]
+    },
+    options: {
+      title: {
+        display: false,
+        text: 'Population growth (millions): Europe & Africa'
+      },
+      legend: { display: true ,
+                position:'bottom'},
+      plugins: {
+          labels: false
+      }
+    }
+});
+}
+
+{% endblock %}
+</script>
+
+
+
+{% block content %}
+
+<form method="GET" >
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+      <h1 class="h2">Enterprise Evolution</h1>
+      <div class="btn-toolbar mb-2 mb-md-0">
+        <label  for="inputState" class="mdb-main-label">RAW DATA Version: </label>
+        <select id="inputState" class="mdb-select md-form colorful-select dropdown-dark" name="version">
+          <option selected>{{ version_filtered }}</option>
+          {% for item in list_versions %}
+          <option>{{ item }}</option>
+          {% endfor %}
+        </select>
+        <div class="btn-group mr-2">
+          <!-- <button type="submit" class="btn btn-primary"> Apply </button> -->
+          <button type="submit" class="btn btn-sm btn-outline-primary">Apply</button>
+        </div>
+      </div>
+</div>
+</form>
+
+
+
+<div class="row" >
+          <div class="col-lg-3 col-md-5 col-sm-5 " >
+            <div class="card card-stats" >
+              <div class="card-body" >
+                <div class="row">
+                  <div class="col-2 col-md-3" >
+                    <img  src="\static\images\record.png" height="40">
+                  </div>
+                  <div class="col-7 col-md-8">
+                    <div class="numbers">
+                      <p class="card-category">Number of </p>
+                      <p class="card-title" style="color:#0c2646;  font-size:20px ; font-weight: bold ">
+                        Enterprises
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="card-footer ">
+                <hr>
+                <div class="stats" style="color: #d39e00;" >
+                    {{ num_enterp }}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-5 col-sm-5">
+            <div class="card card-stats">
+              <div class="card-body ">
+                <div class="row">
+                  <div class="col-5 col-md-4">
+
+                      <img  src="\static\images\student.png" height="40">
+
+                  </div>
+                  <div class="col-7 col-md-8">
+                    <div class="numbers">
+                      <p class="card-category">Number of </p>
+                      <p class="card-title" style="color:#0c2646; font-size:20px ; font-weight: bold ">
+                        Students
+                        <p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="card-footer ">
+                <hr>
+                <div class="stats" style="color: #c82333;" >
+                  {{ num_stu }}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-5 col-sm-5">
+            <div class="card card-stats">
+              <div class="card-body ">
+                <div class="row">
+                  <div class="col-5 col-md-4">
+
+                      <img  src="\static\images\enterprise.png" height="40">
+
+                  </div>
+                  <div class="col-7 col-md-8">
+                    <div class="numbers">
+                      <p class="card-category">Number of </p>
+                      <p class="card-title" style="color:#0c2646; font-size:20px ; font-weight: bold ">
+                            Enterprises 2016
+                        <p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="card-footer ">
+                <hr>
+                <div class="stats" style="color: #34ce57;">
+                  {{ num_entrep2016 }}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-5 col-sm-5 " >
+            <div class="card card-stats">
+              <div class="card-body ">
+                <div class="row">
+                  <div class="col-5 col-md-4">
+                      <img  src="\static\images\salary.png" height="40">
+                  </div>
+                  <div class="col-7 col-md-8">
+                    <div class="numbers">
+                      <p class="card-category" >Average of</p>
+                      <p class="card-title" style="color:#0c2646; font-size:20px ; font-weight: bold ">
+                        Salary
+                        <p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="card-footer ">
+                <hr>
+                <div class="stats" style="color: #00bbff;">
+                  {{ mean_sal }}
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+</div>
+<div class="row">
+    <div class="col-lg-6  text-center" >
+            <div class="card-chart ">
+              <div class="card-header ">
+                <h5 class="card-title">Biggest Number Students</h5>
+                <p class="card-category">per Year</p>
+              </div>
+               <div class="inside-left">
+                    <canvas class="my-4 w-10" id="myChart" width="100%" height="70"></canvas>
+                 </div>
+              </div>
+    </div>
+    <div class="col-lg-6  text-center" >
+      <div class="card-chart ">
+        <div class="card-header ">
+          <h5 class="card-title">Most Growing Qtd Interships</h5>
+          <p class="card-category">per Year</p>
+        </div>
+         <div class="inside-left">
+              <canvas class="my-4 w-10" id="myChart2" width="100%" height="70"></canvas>
+           </div>
+        </div>
+    </div>  
+</div> 
+
+
+
+ <!--   Core JS Files   -->
+  <scripst src="../static/assets/js/core/jquery.min.js"></script>
+  <scripst src="../static/assets/js/core/popper.min.js"></script>
+  <scripst src="../static/assets/js/core/bootstrap.min.js"></script>
+  <scripst src="../static/assets/js/plugins/perfect-scrollbar.jquery.min.js"></script>
+  
+  <scripst src="htdtps://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+  <scripst src="https://d3js.org/d3.v4.js"></script> 
+  <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+{% endblock %}

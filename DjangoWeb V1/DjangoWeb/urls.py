@@ -43,6 +43,7 @@ urlpatterns = [
     path('Interface/etl_mergetablesRF', views.etl_mergetablesRF, name='etl_mergetablesRF'),
     path('Interface/forecast_predict', views.forecast_predict, name='forecast_predict'),
     path('Interface/forecast_predict_update', views.forecast_predict_update, name='forecast_predict_update'),
+    path('Interface/forecast_enterprise', views.forecast_enterprise, name='forecast_enterprise'),
     path('Interface/contact_us',views.contact_us,name='contact_us'),
     #path('', views.home, name='home'),
     #path('contact/', views.contact, name='contact'),
