@@ -316,6 +316,7 @@ def forecast_enterprise(request):
             'num_stu':num_stu,
             'num_entrep2016':num_entrep2016,
             'mean_sal':mean_sal,
+            
             'enterpYear':enterpYear,
             'enterpQTD1':enterpQTD1,
             'enterpQTD2':enterpQTD2,
