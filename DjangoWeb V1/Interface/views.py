@@ -300,16 +300,31 @@ def forecast_enterprise(request):
     num_entrep2016=len(df2016['ID_ANO'].unique())
     mean_sal=mean_sal1(df)
 
-    bigEnterp=bigEnterp1(df)
-    #print(bigEnterp)
+    stu_int_df=df
+    stu_int_df['ANNEE_SCOLAIRE'].dropna(inplace=True)
+    ent_uni_list= stu_int_df['ENTREPRISE'].unique()  
+    stu_nbr={}
+    for ent in ent_uni_list:
+        stu_nbr[ent]={}
+        stu_nbr[ent]['no_of_student']= len(stu_int_df[stu_int_df['ENTREPRISE']==ent])
+        stu_nbr[ent]['Year']=[]
+        stu_nbr[ent]['no_per_year']=[]
+        for year in stu_int_df[stu_int_df['ENTREPRISE']==ent]['ANNEE_SCOLAIRE'].unique():
+            stu_nbr[ent]['Year'].append(year)
+            stu_nbr[ent]['no_per_year'].append(len(stu_int_df[ (stu_int_df['ENTREPRISE']==ent) & (stu_int_df['ANNEE_SCOLAIRE']==year)] ))
+    stu_ent_df= stu_nbr
+    enterpYear= df['YEAR'].unique().tolist()
+    enterpYear.remove('')
+    enterpYear = [int(i) for i in enterpYear]                       #fini
+    print(stu_ent_df['MUREX'])
+   
     
-    
-    enterpYear= [2010,2011,2012,2014, 2015]
     enterpQTD1=[400, 550, 650, 700, 300 ]
     enterpQTD2=[0, 250, 950, 400, 100 ]
     enterpQTD3=[100, 50, 0, 400, 800 ]
     #label
     context={
+            
             'list_versions':list_versions,
             'version_filtered':version_filtered,
             'num_enterp':num_enterp,
