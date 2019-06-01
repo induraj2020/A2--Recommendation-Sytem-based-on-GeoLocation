@@ -10,6 +10,8 @@ from django.contrib.auth.views import LoginView, LogoutView
 from dataCRUD.views import PRG_STUDENT_SITE_View
 from Interface import views
 from UploadingFile.views import uploadCSV
+from UploadingFile.views import model_form_upload
+
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -43,6 +45,7 @@ urlpatterns = [
     path('Interface/etl_mergetablesRF', views.etl_mergetablesRF, name='etl_mergetablesRF'),
     path('Interface/forecast_predict', views.forecast_predict, name='forecast_predict'),
     path('Interface/forecast_predict_update', views.forecast_predict_update, name='forecast_predict_update'),
+    path('Interface/forecast_enterprise', views.forecast_enterprise, name='forecast_enterprise'),
     path('Interface/contact_us',views.contact_us,name='contact_us'),
     #path('', views.home, name='home'),
     #path('contact/', views.contact, name='contact'),
@@ -63,8 +66,8 @@ urlpatterns = [
     #path('admin/', admin.site.urls),
     path('Interface/dataCRUD/',PRG_STUDENT_SITE_View, name='dataCRUD'), # Url to programstudentsite module
     #url(r'^upload/csv/$', views.upload_csv, name='upload_csv'),
-    path('Interface/uploadcsv/',uploadCSV,name='uploadCSV'),
-
+    #path('Interface/uploadcsv/',uploadCSV,name='uploadCSV'),
+    path('Interface/uploadcsv/', model_form_upload, name='model_form_upload'),
     ### 14-05-19 ### edit by Indu## 
  #   path('PRGSTUDENTSITE/',PRG_STUDENT_SITE_View, name='PRGSTUDENTSITE'), # Url to programstudentsite module
     #url(r'^upload/csv/$', views.upload_csv, name='upload_csv'),

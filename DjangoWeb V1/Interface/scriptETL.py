@@ -264,7 +264,7 @@ def map2():
     qs_adr= adr
     df_of_query_result_adr= read_frame(qs_adr)
     newTable_adr=df_of_query_result_adr
-    m= folium.Map(location=[48.8566,2.3522],tiles = "Stamen Toner",zoom_start=3)
+    m= folium.Map(location=[48.8566,2.3522],tiles = "Stamen Toner",zoom_start=2)
     #cergy=['49.034955','2.069925']
     #pau=['43.319568','-0.360571']
     newTable_ent_adr= newTable_adr[['ENT_LAT','ENT_LON']]
@@ -294,9 +294,9 @@ def map2():
         mc.add_child(folium.Marker([newTable_ent_adr.iloc[i]['ENT_LAT'],newTable_ent_adr.iloc[i]['ENT_LON']])).add_to(m)
         #mc.add_child(folium.Marker([newTable_stu_adr.iloc[i]['ADR_LAT'],newTable_stu_adr.iloc[i]['ADR_LON']],icon=folium.Icon(color='red'))).add_to(m)
         #folium.Marker([newTable_site_adr.iloc[i]['SITE_LAT'],newTable_site_adr.iloc[i]['SITE_LON']],icon=folium.Icon(icon='green')).add_to(m)
-     #   m.add_children(plugins.HeatMap(newTable_adr_lo, radius=15))
-    m.save("H:\\Documents\\gitnew\\AdeoProject\\DjangoWeb V1\\Interface\\templates\\map.html")
-    #m.save(os.path.join(BASE_DIR,"DjangoWeb V1\\Interface\\template\\map.html"),index=False)
+        #m.add_children(plugins.HeatMap(newTable_adr_lo, radius=15))
+
+    m.save( os.path.join(BASE_DIR,'DjangoWeb V1\Interface\\templates\map.html') )
     return None
     
 def change(num):
@@ -328,6 +328,15 @@ def num_entre1(df):
 
 #mean of salary
 def mean_sal1(df):
+    df['REMUNERATION'] = pd.to_numeric(df['REMUNERATION'], errors='coerce')
+    meansal = df['REMUNERATION'].mean()
+    
+    # print(meansal)
+    meansal = "€ {:,.2f}".format(meansal)
+    return(meansal)
+
+#mean of salary
+def mean_sal2(df):
     df['REMUNERATION'] = pd.to_numeric(df['REMUNERATION'], errors='coerce')
     meansal = df['REMUNERATION'].mean()
     # print(meansal)
