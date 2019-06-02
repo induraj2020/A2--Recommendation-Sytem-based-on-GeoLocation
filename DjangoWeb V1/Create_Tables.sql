@@ -22,7 +22,7 @@
 -- DELETE FROM "FORECAST_WEIGHTS" where idCSV>=2; 
 -- select * from FORECAST_WEIGHTS;
 
--- VACUUM;
+VACUUM;
 
 -- ALTER TABLE "mergedtables" ADD COLUMN ENT_LAT REAL;
 -- ALTER TABLE "mergedtables" ADD COLUMN ENT_LON REAL;
@@ -124,8 +124,8 @@
 --   FROM  "PRG_STUDENT_SITE";
 
 -- SELECT DISTINCT idCSV from "PRG_STUDENT_SITE";
--- SELECT DISTINCT idCSV from ADR_STUDENTS;
--- SELECT DISTINCT idCSV from "STUDENT_INTERNSHIP";
+/* SELECT DISTINCT idCSV from ADR_STUDENTS; */
+/* SELECT DISTINCT idCSV from "STUDENT_INTERNSHIP"; */
 
 -- INSERT INTO
 --   "ADR_STUDENTS" (ADR_CP, ADR_PAYS, ADR_VILLE, ID_ANO, idCSV)
@@ -174,3 +174,12 @@
 -- (11,-0.12265417857601617,0.6536882444296673,0.8694860998917122),
 -- (12,0.32942959823090007,0.43087942045379946,0.9318324900236523)
 --   ;
+
+/* select * from "PRG_STUDENT_SITE"; */
+/* select idCSV, count(*) from "PRG_STUDENT_SITE" group by idCSV; */
+/* select count(*)  */
+/* delete from PRG_STUDENT_SITE where idCSV is NULL; */
+/* delete from PRG_STUDENT_SITE where idCSV=3; */
+
+/* select idCSV, count(*) from "PRG_STUDENT_SITE" group by idCSV; */
+/* delete from STUDENT_INTERNSHIP where idCSV is NULL; */
