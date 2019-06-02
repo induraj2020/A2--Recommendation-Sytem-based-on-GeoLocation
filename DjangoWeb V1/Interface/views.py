@@ -15,6 +15,7 @@ from django.contrib.auth.decorators import user_passes_test
 from django.db.models import Max
 from django_pandas.io import read_frame
 import time
+import simplejson as json
 
 # Create your views here.
 @login_required
@@ -59,8 +60,8 @@ def descriptiveStats(request):                         ## function to display ne
     c_cergy, c_pau, c_le =count_std(df,'PRG')
     s_cergy, s_pau, s_le =salary_avg(df, 'PRG')
     top, label = topx(df,'ENTREPRISE')
-    print('hiiiiiiiii')
-    print(c_cergy)
+    #print('hiiiiiiiii')
+    #print(c_cergy)
     context={
              'LIST_VERSIONS': df_list_versions,
              'SELECTED_VERSION':version_filtered,
@@ -316,15 +317,28 @@ def forecast_enterprise(request):
     enterpYear= df['YEAR'].unique().tolist()
     enterpYear.remove('')
     enterpYear = [int(i) for i in enterpYear]                       #fini
-    print(stu_ent_df['MUREX'])
-   
+    #print(stu_ent_df['MUREX'])
+
+    dict_gte={}                                                # dictionary thats going to contain enterprise whose requirement number is >20
+    for item_key,item_value in stu_nbr.items():                 
+        for iwk,iwv in item_value.items():                      # item within key, item within value
+            if iwk == 'no_of_student':
+                if iwv > 30:
+                    #print(stu_nbr[item_key])
+                    dict_gte[item_key]=stu_nbr[item_key]
+                else:
+                    continue
     
     enterpQTD1=[400, 550, 650, 700, 300 ]
     enterpQTD2=[0, 250, 950, 400, 100 ]
     enterpQTD3=[100, 50, 0, 400, 800 ]
+    ccats=['indu','prithvi']
     #label
     context={
-            
+            'ent_uni_list':ent_uni_list,
+            'stu_ent_df':json.dumps(dict_gte),
+            'stu_ent_dic':dict_gte,
+            'check':json.dumps(ccats),
             'list_versions':list_versions,
             'version_filtered':version_filtered,
             'num_enterp':num_enterp,
