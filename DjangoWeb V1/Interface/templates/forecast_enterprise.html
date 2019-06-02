@@ -1,12 +1,13 @@
 {% extends "base.html" %}
-
+{% load static %} 
+{% static "indu.csv" %}
+<!--https://stackoverflow.com/questions/54960091/loading-a-csv-file-in-d3-js-inside-django-is-not-working -->
 <script>
 {% block jquery %}
 $.ajax({
     success: function(data) {
-       setchart()
-       setchart2()
-       
+        setchart()
+        setchart2()
     },
     error: function(error_data){
         console.log("error")
@@ -34,26 +35,41 @@ prgcolorborderset =[
     'rgba(60, 90, 209, 1)',
     'rgba(280, 243, 36, 1)',
     'rgba(230,243, 36, 1)',
-
 ]
 function setchart() {
     var ctx = document.getElementById('myChart').getContext('2d');
     ctx.shadowBlur=20;
     ctx.shadowColor="black";
-    var i=0;
-    var j=0;
     var myChart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels:{{ enterpYear }},
+                labels:{{ enterpYear }} ,
                 datasets: [
                   {
-                    label: 'Ent'+j,
+                    label: 'Ent1',
                     data: {{ enterpQTD1 }},
                     //backgroundColor: prgcolorset ,
                     borderColor: prgcolorborderset,
                     borderWidth: 1,
                     fill: false
+                  },
+                  {
+                    label: 'Ent2',
+                    data: {{ enterpQTD2 }},
+                    //backgroundColor: prgcolorset ,
+                    borderColor:'#26c6da',
+                    borderWidth: 1,
+                    fill: false,
+                    borderDash: [10,5]
+                  },
+                  {
+                    label: 'Ent3',
+                    data: {{ enterpQTD3 }},
+                    //backgroundColor: prgcolorset ,
+                    borderColor:'#5c6bc0',
+                    borderWidth: 1,
+                    fill: false,
+                    //borderDash: [10,5]
                   }
                 ]
     },
@@ -65,12 +81,10 @@ function setchart() {
                 }
             }]
         },
-
         title: {
             display: false,
             text: 'Students per year'
         },
-
         legend: {
             display: true,
             position:'bottom',
@@ -80,9 +94,7 @@ function setchart() {
         }
     }
 });
-
 }
-
 function setchart2() {
     var ctx = document.getElementById('myChart2').getContext('2d');
     ctx.shadowBlur=20;
@@ -107,12 +119,10 @@ function setchart2() {
                 }
             }]
         },
-
         title: {
             display: false,
             text: 'Students per year'
         },
-
         legend: {
             display: true,
             position:'bottom',
@@ -122,13 +132,11 @@ function setchart2() {
         }
     }
 });
-
 }
-
-
-
 {% endblock %}
 </script>
+
+
 
 {% block content %}
 
@@ -149,7 +157,7 @@ function setchart2() {
           </div>
         </div>
   </div>
-</form>
+  </form>
 
 
 <div class="row" >
@@ -286,11 +294,6 @@ function setchart2() {
 
     
 </div>
- 
-{% for ent in stu_ent_df %}
-  <p1> {{ ent.values }} </p1>
-{% endfor %}
-
 
  <!--   Core JS Files   -->
   <scripst src="../static/assets/js/core/jquery.min.js"></script>
