@@ -9,13 +9,13 @@
         <h1 class="h2">Home</h1>
         <div class="btn-toolbar mb-2 mb-md-0">
           <div class="btn-group mr-2">
-            <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
-            <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
-          </div>
-          <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
-            <span data-feather="calendar"></span>
-            This week
-          </button>
+            <!-- <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary">Export</button> -->
+            </div>
+            <!-- <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
+              <span data-feather="calendar"></span>
+              This week
+            </button> --> 
         </div>
       </div>
       
@@ -23,11 +23,13 @@
         <div class="card-deck mb-3 text-center">
           <div class="card mb-4 shadow-sm">
             <div class="card-header">
-              <h4 class="my-0 font-weight-normal">Select Data</h4>
+              <h4 class="my-0 font-weight-normal">Forecast</h4>
             </div>
             <div class="card-body shadow-sm">
-                    <img src="{% static 'images/Folder-Data-icon.png'%} " class="img-rounded mx-auto d-block" alt="Folder-Data-icon">
-              <button type="button" class="btn btn-lg btn-block btn-primary">Select Data</button>
+                    <img src="{% static 'images/line-chart-icon.png'%} " class="img-rounded mx-auto d-block" alt="Folder-Data-icon">
+                    <a class="nav-link" href="/Interface/forecast_predict">
+                      <button type="button" class="btn btn-lg btn-block btn-primary">Forecast</button>
+                    </a>
             </div>
           </div>
           <div class="card mb-4 shadow-sm">
@@ -36,7 +38,9 @@
             </div>
             <div class="card-body">
                     <img src="{% static 'images/statistics1.png'%} " class="img-rounded" alt="statistics1">
-              <button type="button" class="btn btn-lg btn-block btn-primary">Descriptive Statistics</button>
+              <a class="nav-link" href="/Interface/descriptiveStats">
+                <button type="button" class="btn btn-lg btn-block btn-primary">Descriptive Statistics</button>
+              </a>
             </div>
           </div>
           <div class="card mb-4 shadow-sm">
@@ -45,7 +49,9 @@
             </div>
             <div class="card-body">
                     <img src="{% static 'images/maps-icon.png'%} " class="img-rounded" alt="maps-icon">
-              <button type="button" class="btn btn-lg btn-block btn-primary">Maps</button>
+                    <a class="nav-link" href="/Interface/maps">
+                       <button type="button" class="btn btn-lg btn-block btn-primary">Maps</button>
+                    </a>
             </div>
           </div>
         </div>
