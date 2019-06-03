@@ -301,44 +301,65 @@ def forecast_enterprise(request):
     num_entrep2016=len(df2016['ID_ANO'].unique())
     mean_sal=mean_sal1(df)
 
-    stu_int_df=df
-    stu_int_df['ANNEE_SCOLAIRE'].dropna(inplace=True)
-    ent_uni_list= stu_int_df['ENTREPRISE'].unique()  
-    stu_nbr={}
-    for ent in ent_uni_list:
-        stu_nbr[ent]={}
-        stu_nbr[ent]['no_of_student']= len(stu_int_df[stu_int_df['ENTREPRISE']==ent])
-        stu_nbr[ent]['Year']=[]
-        stu_nbr[ent]['no_per_year']=[]
-        for year in stu_int_df[stu_int_df['ENTREPRISE']==ent]['ANNEE_SCOLAIRE'].unique():
-            stu_nbr[ent]['Year'].append(year)
-            stu_nbr[ent]['no_per_year'].append(len(stu_int_df[ (stu_int_df['ENTREPRISE']==ent) & (stu_int_df['ANNEE_SCOLAIRE']==year)] ))
-    stu_ent_df= stu_nbr
-    enterpYear= df['YEAR'].unique().tolist()
-    enterpYear.remove('')
-    enterpYear = [int(i) for i in enterpYear]                       #fini
-    #print(stu_ent_df['MUREX'])
+    # stu_int_df=df
+    # stu_int_df['ANNEE_SCOLAIRE'].dropna(inplace=True)
+    # ent_uni_list= stu_int_df['ENTREPRISE'].unique()  
+    # stu_nbr={}
+    # for ent in ent_uni_list:
+    #     stu_nbr[ent]={}
+    #     stu_nbr[ent]['no_of_student']= len(stu_int_df[stu_int_df['ENTREPRISE']==ent])
+    #     stu_nbr[ent]['Year']=[]
+    #     stu_nbr[ent]['no_per_year']=[]
+    #     for year in stu_int_df[stu_int_df['ENTREPRISE']==ent]['ANNEE_SCOLAIRE'].unique():
+    #         stu_nbr[ent]['Year'].append(year)
+    #         stu_nbr[ent]['no_per_year'].append(len(stu_int_df[ (stu_int_df['ENTREPRISE']==ent) & (stu_int_df['ANNEE_SCOLAIRE']==year)] ))
+    # stu_ent_df= stu_nbr
+    # enterpYear= df['YEAR'].unique().tolist()
+    # enterpYear.remove('')
+    # enterpYear = [int(i) for i in enterpYear]                       #fini
+    # print(stu_ent_df['MUREX'])
 
-    dict_gte={}                                                # dictionary thats going to contain enterprise whose requirement number is >20
-    for item_key,item_value in stu_nbr.items():                 
-        for iwk,iwv in item_value.items():                      # item within key, item within value
-            if iwk == 'no_of_student':
-                if iwv > 30:
-                    #print(stu_nbr[item_key])
-                    dict_gte[item_key]=stu_nbr[item_key]
-                else:
-                    continue
-    
-    enterpQTD1=[400, 550, 650, 700, 300 ]
-    enterpQTD2=[0, 250, 950, 400, 100 ]
-    enterpQTD3=[100, 50, 0, 400, 800 ]
-    ccats=['indu','prithvi']
-    #label
+    # dict_gte={}                                                # dictionary thats going to contain enterprise whose requirement number is >20
+    # for item_key,item_value in stu_nbr.items():                 
+    #     for iwk,iwv in item_value.items():                      # item within key, item within value
+    #         if iwk == 'no_of_student':
+    #             if iwv > 30:
+    #                 #print(stu_nbr[item_key])
+    #                 dict_gte[item_key]=stu_nbr[item_key]
+    #             else:
+    #                 continue
+    # ccats=['indu','prithvi']
+
+
+    #NEED PUT IT DYNAMICALY
+    enterpYear=[2013, 2014, 2015, 2016, 2017]
+    label1="TTOTAL - PAU"
+    enterpQTD1=[7, 11, 14, 19, 9 ]
+    enterpQTD1L=[9.6, 10.8, 12, 13.2, 14.4]
+    label2="CGI - COURBEVOIE"
+    enterpQTD2=[16, 11, 4, 2, 0 ]
+    enterpQTD2L=[15.6, 10.7, 5.8, 0.9, -4]
+    label3="AUBAY"
+    enterpQTD3=[6, 16, 1, 8, 1 ]
+    enterpQTD3L=[10, 8.2, 6.4, 4.6, 2.8 ]
+
+    enterpYearA=[2013, 2014, 2015, 2016, 2017]
+    label1A="TTOTAL - PAU"
+    enterpQTD1A=[7, 11, 14, 19, 9 ]
+    enterpQTD1LA=[9.6, 10.8, 12, 13.2, 14.4]
+    label2A="ATOS - PESSAC"
+    enterpQTD2A=[0, 1, 4, 5, 0 ]
+    enterpQTD2LA=[-1.3, 1.3, 3.3, 5.3, 7.3]
+    label3A="SAFRAN IDENTITY AND SECURITY"
+    enterpQTD3A=[0, 1, 5, 4, 0 ]
+    enterpQTD3LA=[0.3, 1.8, 3.3, 4.8, 6.3 ]
+
     context={
-            'ent_uni_list':ent_uni_list,
-            'stu_ent_df':json.dumps(dict_gte),
-            'stu_ent_dic':dict_gte,
-            'check':json.dumps(ccats),
+            # 'ent_uni_list':ent_uni_list,
+            # 'stu_ent_df':json.dumps(dict_gte),
+            # 'stu_ent_dic':dict_gte,
+            # 'check':json.dumps(ccats),
+
             'list_versions':list_versions,
             'version_filtered':version_filtered,
             'num_enterp':num_enterp,
@@ -346,10 +367,27 @@ def forecast_enterprise(request):
             'num_entrep2016':num_entrep2016,
             'mean_sal':mean_sal,
             
+            'label1':label1,
+            'label2':label2,
+            'label3':label3,
             'enterpYear':enterpYear,
             'enterpQTD1':enterpQTD1,
             'enterpQTD2':enterpQTD2,
-            'enterpQTD3':enterpQTD3
+            'enterpQTD3':enterpQTD3,
+            'enterpQTD1L':enterpQTD1L,
+            'enterpQTD2L':enterpQTD2L,
+            'enterpQTD3L':enterpQTD3L,
+
+            'label1A':label1A,
+            'label2A':label2A,
+            'label3A':label3A,
+            'enterpYearA':enterpYearA,
+            'enterpQTD1A':enterpQTD1A,
+            'enterpQTD2A':enterpQTD2A,
+            'enterpQTD3A':enterpQTD3A,
+            'enterpQTD1LA':enterpQTD1LA,
+            'enterpQTD2LA':enterpQTD2LA,
+            'enterpQTD3LA':enterpQTD3LA
             }
     return render(request, 'forecast_enterprise.html', context)
 

@@ -46,7 +46,7 @@ function setchart() {
                 labels:{{ enterpYear }} ,
                 datasets: [
                   {
-                    label: 'Ent1',
+                    label: '{{label1}}',
                     data: {{ enterpQTD1 }},
                     //backgroundColor: prgcolorset ,
                     borderColor: prgcolorborderset,
@@ -54,8 +54,25 @@ function setchart() {
                     fill: false
                   },
                   {
-                    label: 'Ent2',
+                    label: '{{label1}}',
+                    data: {{ enterpQTD1L }},
+                    //backgroundColor: prgcolorset ,
+                    borderColor: prgcolorborderset,
+                    borderWidth: 1,
+                    fill: false,
+                    borderDash: [10,5]
+                  },
+                  {
+                    label: '{{label2}}',
                     data: {{ enterpQTD2 }},
+                    //backgroundColor: prgcolorset ,
+                    borderColor:'#26c6da',
+                    borderWidth: 1,
+                    fill: false
+                  },
+                  {
+                    label: '{{label2}}',
+                    data: {{ enterpQTD2L }},
                     //backgroundColor: prgcolorset ,
                     borderColor:'#26c6da',
                     borderWidth: 1,
@@ -63,13 +80,21 @@ function setchart() {
                     borderDash: [10,5]
                   },
                   {
-                    label: 'Ent3',
+                    label: '{{label3}}',
                     data: {{ enterpQTD3 }},
                     //backgroundColor: prgcolorset ,
                     borderColor:'#5c6bc0',
                     borderWidth: 1,
+                    fill: false
+                  },
+                  {
+                    label: '{{label3}}',
+                    data: {{ enterpQTD3L }},
+                    //backgroundColor: prgcolorset ,
+                    borderColor:'#5c6bc0',
+                    borderWidth: 1,
                     fill: false,
-                    //borderDash: [10,5]
+                    borderDash: [10,5]
                   }
                 ]
     },
@@ -103,13 +128,59 @@ function setchart2() {
             type: 'line',
             data: {
                 labels:{{ enterpYear }} ,
-                datasets: [{
-                    label: '# of students',
-                    data: {{ enterpQTD1 }},
-            backgroundColor: prgcolorset ,
-            borderColor: prgcolorborderset,
-            borderWidth: 1
-        }]
+                datasets: [
+                {
+                    label: '{{label1A}}',
+                    data: {{ enterpQTD1A }},
+                    //backgroundColor: prgcolorset ,
+                    borderColor: prgcolorborderset,
+                    borderWidth: 1,
+                    fill: false
+                  },
+                  {
+                    label: '{{label1A}}',
+                    data: {{ enterpQTD1LA }},
+                    //backgroundColor: prgcolorset ,
+                    borderColor: prgcolorborderset,
+                    borderWidth: 1,
+                    fill: false,
+                    borderDash: [10,5]
+                  },
+                  {
+                    label: '{{label2A}}',
+                    data: {{ enterpQTD2A }},
+                    //backgroundColor: prgcolorset ,
+                    borderColor:'#26c6da',
+                    borderWidth: 1,
+                    fill: false
+                  },
+                  {
+                    label: '{{label2A}}',
+                    data: {{ enterpQTD2LA }},
+                    //backgroundColor: prgcolorset ,
+                    borderColor:'#26c6da',
+                    borderWidth: 1,
+                    fill: false,
+                    borderDash: [10,5]
+                  },
+                  {
+                    label: '{{label3A}}',
+                    data: {{ enterpQTD3A }},
+                    //backgroundColor: prgcolorset ,
+                    borderColor:'#5c6bc0',
+                    borderWidth: 1,
+                    fill: false
+                  },
+                  {
+                    label: '{{label3A}}',
+                    data: {{ enterpQTD3LA }},
+                    //backgroundColor: prgcolorset ,
+                    borderColor:'#5c6bc0',
+                    borderWidth: 1,
+                    fill: false,
+                    borderDash: [10,5]
+                  }
+        ]
     },
     options: {
         scales: {
