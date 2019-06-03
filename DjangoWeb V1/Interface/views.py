@@ -391,6 +391,90 @@ def forecast_enterprise(request):
             }
     return render(request, 'forecast_enterprise.html', context)
 
+
+@login_required
+def forecast_program(request):
+    df=PRG_STUDENT_SITE.pdobjects.all().to_dataframe()
+    list_versions=return_distinct_version(df)
+    max_version=max(list_versions)
+
+    version_filtered =  (request.GET.get('version'))
+    if version_filtered:
+       version_filtered =  (int) (version_filtered)
+    else:
+        version_filtered=max_version
+
+    df=df[ df['idCSV']==version_filtered ]
+
+    num_enterp=len(df['PRG'].unique())
+    num_stu=len(df['ID_ANO'].unique())
+    df['YEAR']=df['ANNE_SCOLAIRE'].str[:4]
+    df2016=df[ df['YEAR']=='2016' ]
+    num_entrep2016=len(df2016['PRG'].unique())
+    mean_sal=len(df2016['ID_ANO'].unique())
+
+
+    #NEED PUT IT DYNAMICALY
+    enterpYear=[2012, 2013, 2014, 2015, 2016, 2017]
+    label1="ING"
+    enterpQTD1=[618, 614, 1131, 1217, 1039, 1042 ]
+    enterpQTD1L=[694, 794, 893, 993, 1092, 1192]
+    label2="CPI"
+    enterpQTD2=[135, 310, 633, 877, 462, 461]
+    enterpQTD2L=[313, 379, 446, 512, 579, 646]
+    label3="GI"
+    enterpQTD3=[0, 162, 108, 147, 149, 120 ]
+    enterpQTD3L=[149, 145, 141, 137, 132, 128 ]
+
+    enterpYearA=[2012, 2013, 2014, 2015, 2016, 2017]
+    label1A="ING"
+    enterpQTD1A=[618, 614, 1131, 1217, 1039, 1042 ]
+    enterpQTD1LA=[694, 794, 893, 993, 1092, 1192]
+    label2A="CPI"
+    enterpQTD2A=[135, 310, 633, 877, 462, 461]
+    enterpQTD2LA=[313, 379, 446, 512, 579, 646]
+    label3A="MI"
+    enterpQTD3A=[27, 38, 34, 50, 83, 93]
+    enterpQTD3LA=[19, 33, 47, 61, 74, 88]
+
+    context={
+            # 'ent_uni_list':ent_uni_list,
+            # 'stu_ent_df':json.dumps(dict_gte),
+            # 'stu_ent_dic':dict_gte,
+            # 'check':json.dumps(ccats),
+
+            'list_versions':list_versions,
+            'version_filtered':version_filtered,
+            'num_enterp':num_enterp,
+            'num_stu':num_stu,
+            'num_entrep2016':num_entrep2016,
+            'mean_sal':mean_sal,
+            
+            'label1':label1,
+            'label2':label2,
+            'label3':label3,
+            'enterpYear':enterpYear,
+            'enterpQTD1':enterpQTD1,
+            'enterpQTD2':enterpQTD2,
+            'enterpQTD3':enterpQTD3,
+            'enterpQTD1L':enterpQTD1L,
+            'enterpQTD2L':enterpQTD2L,
+            'enterpQTD3L':enterpQTD3L,
+
+            'label1A':label1A,
+            'label2A':label2A,
+            'label3A':label3A,
+            'enterpYearA':enterpYearA,
+            'enterpQTD1A':enterpQTD1A,
+            'enterpQTD2A':enterpQTD2A,
+            'enterpQTD3A':enterpQTD3A,
+            'enterpQTD1LA':enterpQTD1LA,
+            'enterpQTD2LA':enterpQTD2LA,
+            'enterpQTD3LA':enterpQTD3LA
+            }
+    return render(request, 'forecast_program.html', context)
+
+
 @login_required
 def maps(request):
     return render(request, 'maps.html')
