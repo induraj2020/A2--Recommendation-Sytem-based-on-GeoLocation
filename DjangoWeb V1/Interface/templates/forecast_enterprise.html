@@ -35,7 +35,6 @@ prgcolorborderset =[
     'rgba(60, 90, 209, 1)',
     'rgba(280, 243, 36, 1)',
     'rgba(230,243, 36, 1)',
-
 ]
 function setchart() {
     var ctx = document.getElementById('myChart').getContext('2d');
@@ -82,12 +81,10 @@ function setchart() {
                 }
             }]
         },
-
         title: {
             display: false,
             text: 'Students per year'
         },
-
         legend: {
             display: true,
             position:'bottom',
@@ -97,9 +94,7 @@ function setchart() {
         }
     }
 });
-
 }
-
 function setchart2() {
     var ctx = document.getElementById('myChart2').getContext('2d');
     ctx.shadowBlur=20;
@@ -124,12 +119,10 @@ function setchart2() {
                 }
             }]
         },
-
         title: {
             display: false,
             text: 'Students per year'
         },
-
         legend: {
             display: true,
             position:'bottom',
@@ -139,10 +132,7 @@ function setchart2() {
         }
     }
 });
-
 }
-
-
 {% endblock %}
 </script>
 
