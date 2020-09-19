@@ -71,7 +71,7 @@
 
 * Navigation Bar with other options
 
-![](Documents/s5.PNG
+![](Documents/s5.PNG)
   
  
 
